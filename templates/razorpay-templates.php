@@ -7,18 +7,18 @@ class RZP_Templates
     **/
 	function admin_options()
     {
-    	?>
-        	<div class="wrap">
-    			<h2><?php print $GLOBALS['title']; ?></h2>
-    			<form action="options.php" method="POST">
-    	            <?php 
+    	echo
+        	'<div class="wrap">
+    			<h2>Razorpay Payment Gateway</h2>
+    			<form action="options.php" method="POST">';
+                         
     	            	settings_fields('razorpay_fields');
     	            	do_settings_sections('razorpay_sections'); 
     	            	submit_button(); 
-    	            ?>
-    	        </form>
-    	    </div>
-        <?php
+    	echo            
+    	        '</form>
+    	    </div>';
+        
     }
 
     /**
@@ -53,7 +53,7 @@ class RZP_Templates
     **/ 
     function display_header()
     {
-    	echo '<p>' . 'Razorpay is an online payment gateway for India with transparent pricing, seamless integration and great support' . '</p>';
+        echo '<p>' . 'Razorpay is an online payment gateway for India with transparent pricing, seamless integration and great support' . '</p>';
     }
 
     /**
@@ -61,79 +61,85 @@ class RZP_Templates
     **/
     function display_enable()
     {
-    	?>
-    		<input type="checkbox" name="enabled_field" id="enable" value="<?php echo get_option('enabled_field'); ?>" checked/>
-    		<label for ="enable">Enable Razorpay Payment Module.</label>
-    	<?php
+        $default = get_option('enabled_field');
+
+        echo
+            '<input type="checkbox" name="enabled_field" id="enable" value="' .$default. 'he" checked/>
+            <label for ="enable">Enable Razorpay Payment Module.</label>';      
     }
 
     /**
      * Title field of settings page
     **/
-    function display_title(){
-    	
-    	$default = get_option('title_field'); 
-    				
-    	if ($default == "")
-    	{
-    		$default = "Credit Card/Debit Card/NetBanking";
-    	}
+    function display_title()
+    {   
+        $default = get_option('title_field'); 
+                    
+        if ($default == "")
+        {
+            $default = "Credit Card/Debit Card/NetBanking";
+        }
 
-    	?>
-    		<input type="text" name="title_field" id="title" size="35" value="<?php echo $default;?>" /><br>
-    		<label for ="title">This controls the title which the user sees during checkout.</label>
-    	<?php
+        echo
+            '<input type="text" name="title_field" id="title" size="35" value="' .$default. '" /><br>
+            <label for ="title">This controls the title which the user sees during checkout.</label>';      
     }
 
     /**
      * Description field of settings page
     **/
-    function display_description(){
+    function display_description()
+    {
+        $default = get_option('description_field'); 
+                    
+        if ($default == "")
+        {
+            $default = "Pay securely by Credit or Debit card or internet banking through Razorpay";
+        }
 
-    	$default = get_option('description_field'); 
-    				
-    	if ($default == "")
-    	{
-    		$default = "Pay securely by Credit or Debit card or internet banking through Razorpay";
-    	}
-
-    	?>
-    		<input type="text" name="description_field" id="description" size="35" value="<?php echo $default; ?>" /><br>
-    		<label for ="description">This controls the display which the user sees during checkout.</label>
-    	<?php
+        echo
+            '<input type="text" name="description_field" id="description" size="35" value="' .$default. '" /><br>
+            <label for ="description">This controls the display which the user sees during checkout.</label>';      
     }
 
     /**
      * Key ID field of settings page
     **/
-    function display_key_id(){
-    	?>
-    		<input type="text" name="key_id_field" id="key_id" size="35" value="<?php echo get_option('key_id_field'); ?>" /><br>
-    		<label for ="key_id">The key Id and key secret can be generated from "API Keys" section of Razorpay Dashboard. Use test or live for test or live mode.</label>
-    	<?php
+    function display_key_id()
+    {
+        $default = get_option('key_id_field');
+        
+        echo
+            '<input type="text" name="key_id_field" id="key_id" size="35" value="' .$default. '" /><br>
+            <label for ="key_id">The key Id and key secret can be generated from "API Keys" section of Razorpay Dashboard. Use test or live for test or live mode.</label>';
+        
     }
 
     /**
      * Key secret field of settings page
     **/
-    function display_key_secret(){
-    	?>
-    		<input type="text" name="key_secret_field" id="key_secret" size="35" value="<?php echo get_option('key_secret_field'); ?>" /><br>
-    		<label for ="key_secret">The key Id and key secret can be generated from "API Keys" section of Razorpay Dashboard. Use test or live for test or live mode.</label>
-    	<?php
+    function display_key_secret()
+    {
+        $default = get_option('key_secret_field');
+        
+        echo
+            '<input type="text" name="key_secret_field" id="key_secret" size="35" value="' .$default. '" /><br>
+            <label for ="key_id">The key Id and key secret can be generated from "API Keys" section of Razorpay Dashboard. Use test or live for test or live mode.</label>';
     }
 
     /**
      * Payment action field of settings page
     **/
-    function display_payment_action(){
-    	?>
-    		<select name="payment_action_field" id="payment_action" value="<?php echo get_option('payment_action_field'); ?>" />
-    			<option>Authorize and Capture</option>
-    			<option>Authorize</option>
-    		</select>
-    		<br>
-    		<label for ="payment_action">Payment action when order is compelete.</label>
-    	<?php
+    function display_payment_action()
+    {
+        $default = get_option('payment_action_field');
+
+        echo
+            '<select name="payment_action_field" id="payment_action" value="' .$default. '" />
+                <option>Authorize and Capture</option>
+                <option>Authorize</option>
+            </select>
+            <br>
+            <label for ="payment_action">Payment action when order is compelete.</label>';
     }
 }
