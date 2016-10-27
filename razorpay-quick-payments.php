@@ -64,18 +64,21 @@ function wordpress_razorpay_init()
 	    	// admin-post.php is a file that contains methods for us to process HTTP requests
 	    	$redirect_url = esc_url( admin_url('admin-post.php') ); 
 	 
-	    	$order_id = 39;
+	 		// Random order ID for now
+	    	$order_id = mt_rand(); // have to generate an order ID that is unique to every order. Why not databases? 
 
-	    	$post = get_post(get_the_ID());
+	    	add_post_meta(get_the_ID(),'amount','5000'); // In the docs they need to add the amount in paise
 
-	    	//var_dump($post);
+	    	$amount = (int)(get_post_meta(get_the_ID(),'amount')[0]);
+
+	    	delete_post_meta(get_the_ID(),'amount'); // Doing it now just to test
 
 	    	$productinfo = "Order $order_id";
 
             $api = new Api($this->key_id, $this->key_secret);
 
             // Calls the helper function to create order data
-            $data = $this->get_order_creation_data($order_id);
+            $data = $this->get_order_creation_data($order_id, $amount);
             
             $razorpay_order = $api->order->create($data);
 
@@ -85,15 +88,10 @@ function wordpress_razorpay_init()
             // Have to figure this out for a general case
             $razorpay_args = array(
               'key' => $this->key_id,
-              'name' => "Razorpay Test",
-              'amount' => 5000,
+              'name' => "Razorpay Test", // add to config - settings page
+              'amount' => $amount,
               'currency' => 'INR',
               'description' => $productinfo,
-              'prefill' => array(
-                'name' => "Mayank"." "."Amencherla",
-                'email' => "mayank.amencherla@razorpay.com",
-                'contact' => "+917676998014"
-              ),
               'order_id' => $razorpay_order['id']
             );
 
@@ -107,14 +105,14 @@ function wordpress_razorpay_init()
 	    /**
          * Creates orders API data
         **/
-        function get_order_creation_data($order_id)
+        function get_order_creation_data($order_id, $amount)
         {
             switch($this->payment_action)
             {
                 case 'authorize':
                     $data = array(
                       'receipt' => $order_id,
-                      'amount' => 5000,
+                      'amount' => $amount,
               		  'currency' => 'INR',
                       'payment_capture' => 0
                     );    
@@ -123,7 +121,7 @@ function wordpress_razorpay_init()
                 default:
                     $data = array(
                       'receipt' => $order_id,
-                      'amount' => 5000,
+                      'amount' => $amount,
               		  'currency' => 'INR',
                       'payment_capture' => 1
                     );
