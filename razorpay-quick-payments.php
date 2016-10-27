@@ -61,32 +61,12 @@ function wordpress_razorpay_init()
 		function wordpress_razorpay_admin_setup()
 		{
 			add_menu_page('Razorpay Payment Gateway', 'Razorpay', 'manage_options', 'razorpay', array($this,'admin_options'));
-			//add_menu_page('razorpay', 'Razorpay Orders', 'Orders', 'manage_options', 'orders', array($this,'orders_options'));
 		}
 
         /**
 		 * Generates admin page options using Settings API
 		**/
         public function admin_options()
-        {
-        	?>
-            	<div class="wrap">
-        			<h2><?php print $GLOBALS['title']; ?></h2>
-        			<form action="options.php" method="POST">
-			            <?php 
-			            	settings_fields('razorpay_fields');
-			            	do_settings_sections('razorpay_sections'); 
-			            	submit_button(); 
-			            ?>
-			        </form>
-			    </div>
-            <?php
-        }
-
-        /**
-		 * Generates orders page for Razorpay plug in - Gotta change this
-		**/
-        public function orders_options()
         {
         	?>
             	<div class="wrap">
@@ -236,6 +216,9 @@ function wordpress_razorpay_init()
             
             $razorpay_order = $api->order->create($data);
 
+            // Stores the data as a cached variable temporarily
+            set_transient('razorpay_order_id', $razorpay_order['id']);
+
             // Have to figure this out for a general case
             $razorpay_args = array(
               'key' => $this->key_id,
@@ -254,8 +237,6 @@ function wordpress_razorpay_init()
             $json = json_encode($razorpay_args);
 
 			$html = $this->generate_order_form($redirect_url, $json, $order_id);
-
-			$_SESSION['razorpay_order_id'] = $razorpay_order['id']; // session already sent by this time
 
 	    	return $html;
 	    }
@@ -334,7 +315,7 @@ function wordpress_razorpay_init()
 	        processData: false,
 	        type: 'POST',
 	        success: function(data){
-	            console.log(data);
+	            alert(data);
 	        }
 	    });
     };
@@ -358,16 +339,12 @@ RZP;
         }
 
         /**
-         * Check for valid razorpay server callback, also need to call this exactly after payment is complete from the previous page
-         * Basically when razorpayform is submitted. Currently not getting called at the right time. 
+         * This method is used to verify the signature given by Razorpay's Order's API
          **/
         function check_razorpay_response()
         {
-        	// Getting variables from wordpress sessions - but this doesn't work. Have to store this differently
-        	$razorpay_order_id = $_SESSION['razorpay_order_id'];	
-
-        	var_dump($razorpay_order_id);
-        	var_dump($_POST);
+        	// Transient variables can be used to store variables in cache 
+        	$razorpay_order_id = get_transient('razorpay_order_id');	
 
         	if (!empty($_POST['razorpay_payment_id']))
             {
@@ -419,11 +396,9 @@ RZP;
                     $error = 'WORDPRESS_ERROR: Request to Razorpay Failed';
                 }
 
-                var_dump($success);
-
                 if ($success === true)
                 {
-                    $this->msg['message'] = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon. Order Id: $order_id";
+                    $this->msg['message'] = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon. \nOrder Id: $razorpay_order_id";
                     $this->msg['class'] = 'success';
                 }
                 else
@@ -432,7 +407,7 @@ RZP;
                     $this->msg['message'] = 'Thank you for shopping with us. However, the payment failed.';
                 }
 
-                var_dump($this->msg['message']);
+                print_r($this->msg['message']);
             }
         }
 
