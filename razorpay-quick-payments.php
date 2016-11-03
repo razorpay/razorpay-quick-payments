@@ -39,7 +39,7 @@ function wordpress_razorpay_init()
         	$this->description = get_option('description_field');
         	$this->key_id = get_option('key_id_field');
         	$this->key_secret = get_option('key_secret_field');
-        	$this->payment_action = get_option('payment_action_field');;
+        	$this->payment_action = get_option('payment_action_field');
 
         	// The checkout function is released when the pay now button is clicked
         	$this->liveurl = 'https://checkout.razorpay.com/v1/checkout.js'; 
@@ -53,7 +53,7 @@ function wordpress_razorpay_init()
             // Creates a customizable tag for us to place our pay button anywhere using [RZP]
         	add_shortcode('RZP', array($this, 'wordpress_razorpay'));
             // check_razorpay_response is called when form data is sent to admin-post.php
-            add_action( 'admin_post', array($this,'check_razorpay_response' ));
+            add_action( 'init', array($this,'check_razorpay_response' ));
         }
 
 		/**
@@ -123,7 +123,7 @@ function wordpress_razorpay_init()
                       'receipt' => $order_id,
                       'amount' => $amount,
               		  'currency' => 'INR',
-                      'payment_capture' => 1
+                       
                     );
                     break;
             }

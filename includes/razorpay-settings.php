@@ -11,6 +11,7 @@ class RZP_Settings
         // Initializes display options when admin page is initialized
         add_action('admin_init', array($this,'display_options'));
     }
+    
     /**
      * Creating up the settings page for the plug-in on the menu page
     **/
