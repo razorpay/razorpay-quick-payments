@@ -54,7 +54,8 @@ function wordpress_razorpay_init()
             // Creates a customizable tag for us to place our pay button anywhere using [RZP]
         	add_shortcode('RZP', array($this, 'wordpress_razorpay'));
             // check_razorpay_response is called when form data is sent to admin-post.php
-            add_action( 'init', array($this,'check_razorpay_response' ));
+            add_action( 'init', array($this,'order_creation_response'),1);
+            add_action( 'init', array($this,'check_razorpay_response'));
         }
 
 		/**
@@ -62,106 +63,28 @@ function wordpress_razorpay_init()
 		**/
 	    function wordpress_razorpay()
 	    {
-	    	// admin-post.php is a file that contains methods for us to process HTTP requests
-	    	$redirect_url = esc_url( admin_url('admin-post.php') ); 
-	 
-	 		// Random order ID 
-	    	$order_id = mt_rand(0,mt_getrandmax()); 
-
-            // Create a custom field and call it 'amount', and assign the value in paise
-	    	$amount = (int)(get_post_meta(get_the_ID(),'amount')[0]);
-
-	    	$productinfo = "Order $order_id";
-
-            $api = new Api($this->key_id, $this->key_secret);
-
-            $name = $this->get_product_name();
-
-            // Calls the helper function to create order data
-            $data = $this->get_order_creation_data($order_id, $amount);
-            
-            $razorpay_order = $api->order->create($data);
-
-            // Stores the data as a cached variable temporarily
-            set_transient('razorpay_order_id', $razorpay_order['id']);
-
-            // Have to figure this out for a general case
-            $razorpay_args = array(
-              'key' => $this->key_id,
-              'name' => $name, 
-              'amount' => $amount,
-              'currency' => 'INR',
-              'description' => $productinfo,
-              'order_id' => $razorpay_order['id']
-            );
-
-            $json = json_encode($razorpay_args);
-
-			$html = $this->generate_order_form($redirect_url, $json, $order_id);
+			$html = $this->generate_order_form();
 
 	    	return $html;
 	    }
 
-        function get_product_name()
-        {
-            // Set custom field on page called 'name' to name of the product or whatever you like
-            if (!is_null(get_post_meta(get_the_ID(),'name')))
-            {
-                $name = get_post_meta(get_the_ID(),'name')[0];
-            }
-
-            // If name isn't set, default is the title of the page
-            else
-            {
-                $name = get_the_title();
-            }
-            
-            return $name;
-        }
-
-	    /**
-         * Creates orders API data
-        **/
-        function get_order_creation_data($order_id, $amount)
-        {
-            switch($this->payment_action)
-            {
-                case 'authorize':
-                    $data = array(
-                      'receipt' => $order_id,
-                      'amount' => $amount,
-              		  'currency' => 'INR',
-                      'payment_capture' => 0
-                    );    
-                    break;
-
-                default:
-                    $data = array(
-                      'receipt' => $order_id,
-                      'amount' => $amount,
-              		  'currency' => 'INR',
-                      'payment_capture' => 1
-                    );
-                    break;
-            }
-
-            return $data;
-        }
-
         /**
          * Generates the order form
         **/
-        function generate_order_form($redirect_url, $json, $order_id)
+        function generate_order_form()
         {
+            // admin-post.php is a file that contains methods for us to process HTTP requests
+            $redirect_url = esc_url( admin_url('admin-post.php') ); 
+
+            $pageID = get_the_ID();
+
         	$html = <<<RZP
 <div>
 	<button id="btn-razorpay">Pay with Razorpay</button>
 </div>
 <script src="{$this->liveurl}"></script>
-<script>
-    var data = $json;
-</script>
-<form name='razorpayform' action="$redirect_url" method="POST">
+
+<form name='razorpayform' id="paymentform" action="$redirect_url" method="POST">
     <input type="hidden" name="merchant_order_id" value="$order_id">
     <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
     <input type="hidden" name="razorpay_order_id"   id="razorpay_order_id"  >
@@ -172,43 +95,52 @@ function wordpress_razorpay_init()
 
 <script>
 
-	data.handler = function(payment)
-	{
-		document.getElementById('razorpay_payment_id').value = payment.razorpay_payment_id;
-		document.getElementById('razorpay_order_id').value = payment.razorpay_order_id;
-		document.getElementById('razorpay_signature').value = payment.razorpay_signature;
+    // global method
+    function createOrder()
+    {
+        $.ajax({
+            url: "$redirect_url?action=create_order&page_id=$pageID",
+            type: 'GET',
+            success: function(order) 
+            {  
+                rzp_order = JSON.parse(order);
+                
+                rzp_order.handler = function(payment)
+                {
+                    document.getElementById('razorpay_payment_id').value = payment.razorpay_payment_id;
+                    document.getElementById('razorpay_order_id').value = payment.razorpay_order_id;
+                    document.getElementById('razorpay_signature').value = payment.razorpay_signature;
 
-		var form = new FormData();
+                    var form_data = $('form').serializeArray();
 
-		var form_data = $('form').serializeArray();
-	    
-	    $.each(form_data,function(key,input){
-	        form.append(input.name,input.value);
-	    });
-	    
-	    $.ajax({
-	        url: "$redirect_url", // fix multipart
-	        data: form,
-	        contentType: false,
-	        processData: false,
-	        type: 'POST',
-	        success: function(data){
-	            alert(data);
-	        }
-	    });
-    };
+                    //debugger;
+                    
+                    $.ajax({
+                        url: "$redirect_url", 
+                        data: form_data,
+                        type: 'POST',
+                        success: function(response){
+                            alert(response);
+                        }
+                    });
+                };
 
-	var razorpayCheckout = new Razorpay(data);
+                // After order is created, open checkout
+                openCheckout(rzp_order);
+            }
+        })
+    }
 
 	// global method
-    function openCheckout() 
+    function openCheckout(rzp_order) 
     {
-      	razorpayCheckout.open();
+        var razorpayCheckout = new Razorpay(rzp_order);
+        razorpayCheckout.open();
     }
 
 	document.getElementById("btn-razorpay").onclick = function()
 	{
-		openCheckout();
+        createOrder();
 	}
 
 </script>
@@ -216,16 +148,106 @@ RZP;
 			return $html;
         }
 
+
+        function order_creation_response()
+        {
+            if (!empty($_GET))
+            {
+                // Random order ID 
+                $order_id = mt_rand(0,mt_getrandmax()); 
+
+                // Create a custom field and call it 'amount', and assign the value in paise
+                $pageID = $_GET['page_id'];
+                $amount = (int)(get_post_meta($pageID,'amount')[0]);
+
+                $productinfo = "Order $order_id";
+
+                $api = new Api($this->key_id, $this->key_secret);
+
+                $name = $this->get_product_name($pageID);
+
+                // Calls the helper function to create order data
+                $data = $this->get_order_creation_data($order_id, $amount);
+                
+                $razorpay_order = $api->order->create($data);
+
+                // Stores the data as a cached variable temporarily
+                set_transient('razorpay_order_id', $razorpay_order['id']);
+
+                // Have to figure this out for a general case
+                $razorpay_args = array(
+                  'key' => $this->key_id,
+                  'name' => $name, 
+                  'amount' => $amount,
+                  'currency' => 'INR',
+                  'description' => $productinfo,
+                  'order_id' => $razorpay_order['id'] //-------> Add this to the json later
+                );
+
+                $json = json_encode($razorpay_args);
+
+                print_r($json);
+            }
+        }
+
+        
+        function get_product_name($pageID)
+        {
+            // Set custom field on page called 'name' to name of the product or whatever you like
+            switch (!is_null(get_post_meta($pageID,'name')))
+            {
+                case true:
+                    $name = get_post_meta($pageID,'name')[0];
+                    break;          
+                
+                // If name isn't set, default is the title of the page
+                default: 
+                    $name = get_the_title($pageID);
+                    break;
+            }
+            
+            return $name;
+        }
+
+        /**
+         * Creates orders API data
+        **/
+        function get_order_creation_data($order_id, $amount)
+        {
+            switch ($this->payment_action)
+            {
+                case 'authorize':
+                    $data = array(
+                      'receipt' => $order_id,
+                      'amount' => $amount,
+                      'currency' => 'INR',
+                      'payment_capture' => 0
+                    );    
+                    break;
+
+                default:
+                    $data = array(
+                      'receipt' => $order_id,
+                      'amount' => $amount,
+                      'currency' => 'INR',
+                      'payment_capture' => 1
+                    );
+                    break;
+            }
+
+            return $data;
+        }
+
         /**
          * This method is used to verify the signature given by Razorpay's Order's API
          **/
         function check_razorpay_response()
-        {
-        	// Transient variables can be used to store variables in cache 
-        	$razorpay_order_id = get_transient('razorpay_order_id');	
-
+        {	
         	if (!empty($_POST['razorpay_payment_id']))
             {
+                // Transient variables can be used to store variables in cache 
+                $razorpay_order_id = get_transient('razorpay_order_id');
+
             	$razorpay_payment_id = $_POST['razorpay_payment_id'];
 
             	$key_id = $this->key_id;
