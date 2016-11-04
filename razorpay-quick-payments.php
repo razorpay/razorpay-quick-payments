@@ -19,6 +19,7 @@ add_action('plugins_loaded', 'wordpress_razorpay_init', 0); // not sure if this 
 
 function wordpress_razorpay_init()
 {
+    // Add a check to see if the class already exists. Good practice. 
 	class WP_Razorpay
 	{
 		const BASE_URL = 'https://api.razorpay.com/';
@@ -64,18 +65,17 @@ function wordpress_razorpay_init()
 	    	// admin-post.php is a file that contains methods for us to process HTTP requests
 	    	$redirect_url = esc_url( admin_url('admin-post.php') ); 
 	 
-	 		// Random order ID for now
-	    	$order_id = mt_rand(); // have to generate an order ID that is unique to every order. Why not databases? 
+	 		// Random order ID 
+	    	$order_id = mt_rand(0,mt_getrandmax()); 
 
-	    	add_post_meta(get_the_ID(),'amount','5000'); // In the docs they need to add the amount in paise
-
+            // Create a custom field and call it 'amount', and assign the value in paise
 	    	$amount = (int)(get_post_meta(get_the_ID(),'amount')[0]);
-
-	    	delete_post_meta(get_the_ID(),'amount'); // Doing it now just to test
 
 	    	$productinfo = "Order $order_id";
 
             $api = new Api($this->key_id, $this->key_secret);
+
+            $name = $this->get_product_name();
 
             // Calls the helper function to create order data
             $data = $this->get_order_creation_data($order_id, $amount);
@@ -88,7 +88,7 @@ function wordpress_razorpay_init()
             // Have to figure this out for a general case
             $razorpay_args = array(
               'key' => $this->key_id,
-              'name' => "Razorpay Test", // add to config - settings page
+              'name' => $name, 
               'amount' => $amount,
               'currency' => 'INR',
               'description' => $productinfo,
@@ -101,6 +101,23 @@ function wordpress_razorpay_init()
 
 	    	return $html;
 	    }
+
+        function get_product_name()
+        {
+            // Set custom field on page called 'name' to name of the product or whatever you like
+            if (!is_null(get_post_meta(get_the_ID(),'name')))
+            {
+                $name = get_post_meta(get_the_ID(),'name')[0];
+            }
+
+            // If name isn't set, default is the title of the page
+            else
+            {
+                $name = get_the_title();
+            }
+            
+            return $name;
+        }
 
 	    /**
          * Creates orders API data
@@ -123,7 +140,7 @@ function wordpress_razorpay_init()
                       'receipt' => $order_id,
                       'amount' => $amount,
               		  'currency' => 'INR',
-                       
+                      'payment_capture' => 1
                     );
                     break;
             }
@@ -138,7 +155,7 @@ function wordpress_razorpay_init()
         {
         	$html = <<<RZP
 <div>
-	<button id="btn-razorpay">Pay using Razorpay</button>
+	<button id="btn-razorpay">Pay with Razorpay</button>
 </div>
 <script src="{$this->liveurl}"></script>
 <script>
