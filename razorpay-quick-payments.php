@@ -78,6 +78,8 @@ function wordpress_razorpay_init()
 
             $pageID = get_the_ID();
 
+            $amount = (int)(get_post_meta($pageID,'amount')[0]);
+
         	$html = <<<RZP
 <div>
 	<button id="btn-razorpay">Pay with Razorpay</button>
@@ -89,7 +91,7 @@ function wordpress_razorpay_init()
     </div>
 </div>
 <style>
-    .modal-container {
+   .modal-container {
         display: none;
         position: fixed;
         top: 0;
@@ -103,6 +105,7 @@ function wordpress_razorpay_init()
         transition: 0.25s opacity;
         -webkit-transition: 0.25s opacity;
         text-align: center;
+        font-family: sans-serif;
     }
     .modal-container.shown {
         opacity: 1;
@@ -124,22 +127,38 @@ function wordpress_razorpay_init()
     .modal {
         text-align: left;
         background: #fff;
-        padding: 20px;
+        padding: 30px 20px;
         white-space: normal;
         transform: translateY(30px) scale(0.9);
         transition: 0.25s ease-in;
         vertical-align: middle;
         display: inline-block;
         max-width: 500px;
+        position: relative;
+        border-radius: 4px;
     }
     .close {
         cursor: pointer;
+        position: absolute;
+        right: 0px;
+        top: -4px;
+        width: 36px;
+        text-align: center;
+        line-height: 36px;
+        color: rgba(0, 0, 0, 0.6);
+        border-radius: 0 4px 4px 0;
+        font-size: 24px;
+        transition: 0.2s;
+    }
+    .close:hover {
+        color: #333;
     }
 </style>
 <script src="{$this->liveurl}"></script>
 
 <form name='razorpayform' id="paymentform" action="$redirect_url" method="POST">
     <input type="hidden" name="merchant_order_id" value="$order_id">
+    <input type="hidden" name="order_amount" value="$amount">
     <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
     <input type="hidden" name="razorpay_order_id"   id="razorpay_order_id"  >
     <input type="hidden" name="razorpay_signature"  id="razorpay_signature" >
@@ -180,8 +199,6 @@ function wordpress_razorpay_init()
                     document.getElementById('razorpay_signature').value = payment.razorpay_signature;
 
                     var form_data = $('form').serializeArray();
-
-                    //debugger;
                     
                     $.ajax({
                         url: "$redirect_url", 
@@ -320,7 +337,7 @@ RZP;
 
             	$key_id = $this->key_id;
                 $key_secret = $this->key_secret;
-                $amount = 5000;
+                $amount = $_POST['order_amount'];
 
                 $success = false;
                 $error = "";
@@ -366,7 +383,7 @@ RZP;
 
                 if ($success === true)
                 {
-                    $this->msg['message'] = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."."<br>"."Order Id: $razorpay_order_id";
+                    $this->msg['message'] = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."."<br><br>"."Order Id: $razorpay_order_id"."<br><br>"."Order Amount: $amount";
                     $this->msg['class'] = 'success';
                 }
                 else
