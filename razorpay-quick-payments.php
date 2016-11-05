@@ -80,9 +80,11 @@ function wordpress_razorpay_init()
 
             $amount = (int)(get_post_meta($pageID,'amount')[0]);
 
-        	$html = <<<RZP
-<div>
-	<button id="btn-razorpay">Pay with Razorpay</button>
+        	//$html = file_get_contents(__DIR__.'/frontend/checkout.php');
+
+            $html = <<<RZP
+            <div>
+    <button id="btn-razorpay">Pay with Razorpay</button>
 </div>
 <div class="modal-container">
     <div class="modal">
@@ -90,8 +92,9 @@ function wordpress_razorpay_init()
         <div id='response'></div>
     </div>
 </div>
+
 <style>
-   .modal-container {
+    .modal-container {
         display: none;
         position: fixed;
         top: 0;
@@ -154,7 +157,8 @@ function wordpress_razorpay_init()
         color: #333;
     }
 </style>
-<script src="{$this->liveurl}"></script>
+
+<script src=$this->liveurl></script>
 
 <form name='razorpayform' id="paymentform" action="$redirect_url" method="POST">
     <input type="hidden" name="merchant_order_id" value="$order_id">
@@ -216,20 +220,21 @@ function wordpress_razorpay_init()
         })
     }
 
-	// global method
+    // global method
     function openCheckout(rzp_order) 
     {
         var razorpayCheckout = new Razorpay(rzp_order);
         razorpayCheckout.open();
     }
 
-	document.getElementById("btn-razorpay").onclick = function()
-	{
+    document.getElementById("btn-razorpay").onclick = function()
+    {
         createOrder();
-	}
+    }
 
 </script>
 RZP;
+
 			return $html;
         }
 
@@ -337,7 +342,8 @@ RZP;
 
             	$key_id = $this->key_id;
                 $key_secret = $this->key_secret;
-                $amount = $_POST['order_amount'];
+                
+                $amount = $_POST['order_amount']/100; // paise to rupees
 
                 $success = false;
                 $error = "";
@@ -359,7 +365,7 @@ RZP;
 
                         if (hash_equals($signature , $razorpay_signature))
                         {
-                            $captured = true;;
+                            $captured = true;
                         }
                     }
     
@@ -383,7 +389,8 @@ RZP;
 
                 if ($success === true)
                 {
-                    $this->msg['message'] = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."."<br><br>"."Order Id: $razorpay_order_id"."<br><br>"."Order Amount: $amount";
+                    $this->msg['message'] = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."."<br><br>"."Transaction ID: $razorpay_payment_id"."<br><br>"."Order Amount: ₹$amount";
+
                     $this->msg['class'] = 'success';
                 }
                 else
