@@ -82,6 +82,60 @@ function wordpress_razorpay_init()
 <div>
 	<button id="btn-razorpay">Pay with Razorpay</button>
 </div>
+<div class="modal-container">
+    <div class="modal">
+        <div class="close">×</div>
+        <div id='response'></div>
+    </div>
+</div>
+<style>
+    .modal-container {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 99999;
+        opacity: 0;
+        white-space: nowrap;
+        background: rgba(0, 0, 0, 0.4);
+        transition: 0.25s opacity;
+        -webkit-transition: 0.25s opacity;
+        text-align: center;
+    }
+    .modal-container.shown {
+        opacity: 1;
+    }
+    .modal-container.shown .modal {
+        transform: none;
+        -webkit-transform: none;
+        -moz-transform: none;
+        transition: 0.3s cubic-bezier(.3, 1.5, .7,1) transform, 0.25s opacity;
+    }
+    .modal-container:after {
+        content: '';
+        display: inline-block;
+        vertical-align: middle;
+        height: 100%;
+        vertical-align: middle;
+        display: inline-block;
+    }
+    .modal {
+        text-align: left;
+        background: #fff;
+        padding: 20px;
+        white-space: normal;
+        transform: translateY(30px) scale(0.9);
+        transition: 0.25s ease-in;
+        vertical-align: middle;
+        display: inline-block;
+        max-width: 500px;
+    }
+    .close {
+        cursor: pointer;
+    }
+</style>
 <script src="{$this->liveurl}"></script>
 
 <form name='razorpayform' id="paymentform" action="$redirect_url" method="POST">
@@ -94,6 +148,20 @@ function wordpress_razorpay_init()
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
 <script>
+    function showModal(response) {
+        $('#response').html(response);
+        $('html, body').css('overflow', 'hidden');
+        $('.modal-container').show().prop('offsetHeight');
+        $('.modal-container').addClass('shown');
+    }
+    function hideModal() {
+        $('html, body').css('overflow', '');
+        $('.modal-container').removeClass('shown');
+        setTimeout(function() {
+            $('.modal-container').hide();
+        }, 300)
+    }
+    $('.close').click(hideModal);
 
     // global method
     function createOrder()
@@ -120,7 +188,7 @@ function wordpress_razorpay_init()
                         data: form_data,
                         type: 'POST',
                         success: function(response){
-                            alert(response);
+                            showModal(response);
                         }
                     });
                 };
@@ -298,7 +366,7 @@ RZP;
 
                 if ($success === true)
                 {
-                    $this->msg['message'] = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon. \nOrder Id: $razorpay_order_id";
+                    $this->msg['message'] = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."."<br>"."Order Id: $razorpay_order_id";
                     $this->msg['class'] = 'success';
                 }
                 else
