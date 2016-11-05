@@ -54,8 +54,8 @@ function wordpress_razorpay_init()
             // Creates a customizable tag for us to place our pay button anywhere using [RZP]
         	add_shortcode('RZP', array($this, 'wordpress_razorpay'));
             // check_razorpay_response is called when form data is sent to admin-post.php
-            add_action( 'init', array($this,'order_creation_response'),1);
-            add_action( 'init', array($this,'check_razorpay_response'));
+            add_action( 'init', array($this,'order_creation_response'),9);
+            add_action( 'init', array($this,'wp_check_razorpay_response'));
         }
 
 		/**
@@ -241,7 +241,7 @@ RZP;
         /**
          * This method is used to verify the signature given by Razorpay's Order's API
          **/
-        function check_razorpay_response()
+        function wp_check_razorpay_response()
         {	
         	if (!empty($_POST['razorpay_payment_id']))
             {
