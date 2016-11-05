@@ -82,7 +82,11 @@ function wordpress_razorpay_init()
 
         	$button_html = file_get_contents(__DIR__.'/frontend/checkout.php');
 
-            $html = str_replace(array("#liveurl#","#redirect_url#","#amount#","#pageID#"),array($this->liveurl,$redirect_url,$amount,$pageID),$button_html);
+            // Replacing placeholders in the HTML with PHP variables for the form to be handled correctly 
+            $keys = array("#liveurl#","#redirect_url#","#amount#","#pageID#");
+            $values = array($this->liveurl,$redirect_url,$amount,$pageID);
+
+            $html = str_replace($keys,$values,$button_html);
 
 			return $html;
         }
@@ -99,11 +103,11 @@ function wordpress_razorpay_init()
                 $pageID = $_GET['page_id'];
                 $amount = (int)(get_post_meta($pageID,'amount')[0]);
 
-                $productinfo = "Order $order_id";
-
-                $api = new Api($this->key_id, $this->key_secret);
+                $productinfo = $this->get_product_decription($pageID, $order_id);
 
                 $name = $this->get_product_name($pageID);
+
+                $api = new Api($this->key_id, $this->key_secret);
 
                 // Calls the helper function to create order data
                 $data = $this->get_order_creation_data($order_id, $amount);
@@ -146,6 +150,24 @@ function wordpress_razorpay_init()
             }
             
             return $name;
+        }
+
+        function get_product_decription($pageID, $order_id)
+        {
+            // Set custom field on page called 'name' to name of the product or whatever you like
+            switch (!is_null(get_post_meta($pageID,'description')))
+            {
+                case true:
+                    $description = get_post_meta($pageID,'description')[0];
+                    break;          
+                
+                // If name isn't set, default is the title of the page
+                default: 
+                    $description = "Order $order_id";
+                    break;
+            }
+            
+            return $description;
         }
 
         /**
