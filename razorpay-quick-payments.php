@@ -151,7 +151,7 @@ RZP;
 
         function order_creation_response()
         {
-            if (!empty($_GET))
+            if (!empty($_GET['page_id']))
             {
                 // Random order ID 
                 $order_id = mt_rand(0,mt_getrandmax()); 
