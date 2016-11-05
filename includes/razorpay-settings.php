@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../templates/razorpay-templates.php';
+require_once __DIR__.'/../templates/razorpay-settings-templates.php';
 
 class RZP_Settings
 { 
