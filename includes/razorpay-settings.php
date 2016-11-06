@@ -7,9 +7,9 @@ class RZP_Settings
     public function __construct()
     {
         // Creates a new menu page for razorpay's settings
-        add_action('admin_menu', array($this,'wordpress_razorpay_admin_setup'));
+        add_action('admin_menu', array($this,'wordpressRazorpayAdminSetup'));
         // Initializes display options when admin page is initialized
-        add_action('admin_init', array($this,'display_options'));
+        add_action('admin_init', array($this,'displayOptions'));
     }
     
     /**
@@ -17,87 +17,87 @@ class RZP_Settings
     **/
     function wordpress_razorpay_admin_setup()
     {
-    	add_menu_page('Razorpay Payment Gateway', 'Razorpay', 'manage_options', 'razorpay', array($this,'admin_options'));
+    	add_menu_page('Razorpay Payment Gateway', 'Razorpay', 'manage_options', 'razorpay', array($this,'adminOptions'));
     }
 
     /**
      * Generates admin page options using Settings API
     **/
-    function admin_options()
+    function adminOptions()
     {
         $template = new RZP_Templates();
-        $template->admin_options();
+        $template->adminOptions();
     }
 
     /**
      * Uses Settings API to create fields
     **/
-    function display_options()
+    function displayOptions()
     {
         $template = new RZP_Templates();
-        $template->display_options();
+        $template->displayOptions();
     }
 
     /**
      * Settings page header
     **/        
-    function display_header()
+    function displayHeader()
     {
         $template = new RZP_Templates();
-        $template->display_header();
+        $template->displayHeader();
     }
 
     /**
      * Enable field of settings page
     **/
-    function display_enable()
+    function displayEnable()
     {
         $template = new RZP_Templates();
-        $template->display_enable();
+        $template->displayEnable();
 
     }
 
     /**
      * Title field of settings page
     **/
-    function display_title()
+    function displayTitle()
     {	
         $template = new RZP_Templates();
-        $template->display_title();
+        $template->displayTitle();
     }
 
     /**
      * Description field of settings page
     **/
-    function display_description()
+    function displayDescription()
     {
         $template = new RZP_Templates();
-        $template->display_description();
+        $template->displayDescription();
     }
 
     /**
      * Key ID field of settings page
     **/
-    function display_key_id()
+    function displayKeyID()
     {
         $template = new RZP_Templates();
-        $template->display_key_id();
+        $template->displayKeyID();
     }
 
     /**
      * Key secret field of settings page
     **/
-    function display_key_secret()
+    function displayKeySecret()
     {
         $template = new RZP_Templates();
-        $template->display_key_secret();
+        $template->displayKeySecret();
     }
 
     /**
      * Payment action field of settings page
     **/
-    function display_payment_action(){
+    function displayPaymentAction(){
         $template = new RZP_Templates();
-        $template->display_payment_action();
+        $template->displayPaymentAction();
     }
 }

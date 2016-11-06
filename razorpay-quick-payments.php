@@ -15,19 +15,13 @@ use Razorpay\Api\Api;
 
 require_once __DIR__.'/includes/razorpay-settings.php';
 
-add_action('plugins_loaded', 'wordpress_razorpay_init', 0); // not sure if this is the right hook
+add_action('plugins_loaded', 'wordpressRazorpayInit', 0); // not sure if this is the right hook
 
-function wordpress_razorpay_init()
+function wordpressRazorpayInit()
 {
     // Add a check to see if the class already exists. Good practice. 
 	class WP_Razorpay
 	{
-		const BASE_URL = 'https://api.razorpay.com/';
-
-        const API_VERSION = 'v1';
-
-        const SESSION_KEY = 'razorpay_wc_order_id';
-
         public function __construct()
         {
         	$this->id = 'razorpay';
@@ -52,19 +46,19 @@ function wordpress_razorpay_init()
             $settings = new RZP_Settings();
 
             // Creates a customizable tag for us to place our pay button anywhere using [RZP]
-        	add_shortcode('RZP', array($this, 'wordpress_razorpay'));
+        	add_shortcode('RZP', array($this, 'wordpressRazorpay'));
             // Order is created before response is checked, and is done by giving a lower priority
-            add_action('init', array($this, 'razorpay_order_creation_response'),9);
+            add_action('init', array($this, 'razorpayOrderCreationResponse'),9);
             // check_razorpay_response is called when form data is sent to admin-post.php
-            add_action('init', array($this, 'wp_check_razorpay_response'),10);
+            add_action('init', array($this, 'wpCheckRazorpayResponse'),10);
         }
 
 		/**
 		 * This method is used to generate the pay button using wordpress shortcode [RZP]
 		**/
-	    function wordpress_razorpay()
+	    function wordpressRazorpay()
 	    {
-			$html = $this->generate_razorpay_order_form();
+			$html = $this->generateRazorpayOrderForm();
 
 	    	return $html;
 	    }
@@ -72,7 +66,7 @@ function wordpress_razorpay_init()
         /**
          * Generates the order form
         **/
-        function generate_razorpay_order_form()
+        function generateRazorpayOrderForm()
         {
             // admin-post.php is a file that contains methods for us to process HTTP requests
             $redirect_url = esc_url( admin_url('admin-post.php') ); 
@@ -93,7 +87,7 @@ function wordpress_razorpay_init()
         }
 
 
-        function razorpay_order_creation_response()
+        function razorpayOrderCreationResponse()
         {
             if (!empty($_GET['page_id']))
             {
@@ -104,14 +98,14 @@ function wordpress_razorpay_init()
                 $pageID = $_GET['page_id'];
                 $amount = (int)(get_post_meta($pageID,'amount')[0]);
 
-                $productinfo = $this->get_product_decription($pageID, $order_id);
+                $productinfo = $this->getProductDecription($pageID, $order_id);
 
-                $name = $this->get_product_name($pageID);
+                $name = $this->getProductName($pageID);
 
                 $api = new Api($this->key_id, $this->key_secret);
 
                 // Calls the helper function to create order data
-                $data = $this->get_order_creation_data($order_id, $amount);
+                $data = $this->getOrderCreationData($order_id, $amount);
                 
                 $razorpay_order = $api->order->create($data);
 
@@ -135,7 +129,7 @@ function wordpress_razorpay_init()
         }
 
         
-        function get_product_name($pageID)
+        function getProductName($pageID)
         {
             // Set custom field on page called 'name' to name of the product or whatever you like
             switch (!is_null(get_post_meta($pageID,'name')))
@@ -153,7 +147,7 @@ function wordpress_razorpay_init()
             return $name;
         }
 
-        function get_product_decription($pageID, $order_id)
+        function getProductDecription($pageID, $order_id)
         {
             // Set custom field on page called 'name' to name of the product or whatever you like
             switch (!is_null(get_post_meta($pageID,'description')))
@@ -174,7 +168,7 @@ function wordpress_razorpay_init()
         /**
          * Creates orders API data
         **/
-        function get_order_creation_data($order_id, $amount)
+        function getOrderCreationData($order_id, $amount)
         {
             switch ($this->payment_action)
             {
@@ -203,7 +197,7 @@ function wordpress_razorpay_init()
         /**
          * This method is used to verify the signature given by Razorpay's Order's API
          **/
-        function wp_check_razorpay_response()
+        function wpCheckRazorpayResponse()
         {	
         	if (!empty($_POST['razorpay_payment_id']))
             {
@@ -280,11 +274,11 @@ function wordpress_razorpay_init()
 	/**
 	 * Creating a new WP_Razorpay object and storing it as a $GLOBAL variable
 	**/
-    function create_razorpay_payment_gateway()
+    function createRazorpayPaymentGateway()
     {
     	return new WP_Razorpay();
     }
 
-    $GLOBALS['razorpay'] = create_razorpay_payment_gateway();
+    $GLOBALS['razorpay'] = createRazorpayPaymentGateway();
 
 }

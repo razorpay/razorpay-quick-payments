@@ -5,7 +5,7 @@ class RZP_Templates
 	/**
      * Generates admin page options using Settings API
     **/
-	function admin_options()
+	function adminOptions()
     {
     	echo
         	'<div class="wrap">
@@ -24,7 +24,7 @@ class RZP_Templates
     /**
      * Uses Settings API to create fields
     **/
-    function display_options()
+    function displayOptions()
     {
     	add_settings_section('razorpay_fields','Edit Settings', array($this,'display_header'), 'razorpay_sections');
 
@@ -51,7 +51,7 @@ class RZP_Templates
     /**
      * Settings page header
     **/ 
-    function display_header()
+    function displayHeader()
     {
         echo '<p>' . 'Razorpay is an online payment gateway for India with transparent pricing, seamless integration and great support' . '</p>';
     }
@@ -59,7 +59,7 @@ class RZP_Templates
     /**
      * Enable field of settings page
     **/
-    function display_enable()
+    function displayEnable()
     {
         $default = get_option('enabled_field');
 
@@ -71,7 +71,7 @@ class RZP_Templates
     /**
      * Title field of settings page
     **/
-    function display_title()
+    function displayTitle()
     {   
         $default = get_option('title_field'); 
                     
@@ -88,7 +88,7 @@ class RZP_Templates
     /**
      * Description field of settings page
     **/
-    function display_description()
+    function displayDescription()
     {
         $default = get_option('description_field'); 
                     
@@ -105,7 +105,7 @@ class RZP_Templates
     /**
      * Key ID field of settings page
     **/
-    function display_key_id()
+    function displayKeyID()
     {
         $default = get_option('key_id_field');
         
@@ -118,7 +118,7 @@ class RZP_Templates
     /**
      * Key secret field of settings page
     **/
-    function display_key_secret()
+    function displayKeySecret()
     {
         $default = get_option('key_secret_field');
         
@@ -130,7 +130,7 @@ class RZP_Templates
     /**
      * Payment action field of settings page
     **/
-    function display_payment_action()
+    function displayPaymentAction()
     {
         $default = get_option('payment_action_field');
 
