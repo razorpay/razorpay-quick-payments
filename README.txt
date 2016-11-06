@@ -15,7 +15,7 @@ This is the official "Quick Payments" plugin for Razorpay merchants. This allows
 you to do the following:
 
 1. Add a few custom variables and some markup to a page.
-2. Specify the amount, name and other custom details as page metadata by using Screen Options -> Custom Fields.
+2. Specify the amount, name, description and other custom details as page metadata by using Screen Options -> Custom Fields.
 3. Write [RZP] wherever you want on the post and the button to show up.
 4. The plugin takes over and completes the payment.
 

@@ -1,7 +1,3 @@
-<?php
-    // tempalate for razorpay button
-?>
-
 <div>
     <button id="btn-razorpay">Pay with Razorpay</button>
 </div>
@@ -86,9 +82,8 @@
     <input type="hidden" name="razorpay_signature"  id="razorpay_signature" >
 </form>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-
 <script>
+jQuery(document).ready(function( $ ){
     function showModal(response) {
         $('#response').html(response);
         $('html, body').css('overflow', 'hidden');
@@ -149,5 +144,5 @@
     {
         createOrder();
     }
-
+})
 </script>

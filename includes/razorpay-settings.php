@@ -25,7 +25,7 @@ class RZP_Settings
     **/
     function admin_options()
     {
-    	$template = new RZP_Templates();
+        $template = new RZP_Templates();
         $template->admin_options();
     }
 
@@ -34,7 +34,7 @@ class RZP_Settings
     **/
     function display_options()
     {
-    	$template = new RZP_Templates();
+        $template = new RZP_Templates();
         $template->display_options();
     }
 
@@ -43,7 +43,7 @@ class RZP_Settings
     **/        
     function display_header()
     {
-    	$template = new RZP_Templates();
+        $template = new RZP_Templates();
         $template->display_header();
     }
 
@@ -52,7 +52,7 @@ class RZP_Settings
     **/
     function display_enable()
     {
-    	$template = new RZP_Templates();
+        $template = new RZP_Templates();
         $template->display_enable();
 
     }
@@ -62,7 +62,7 @@ class RZP_Settings
     **/
     function display_title()
     {	
-    	$template = new RZP_Templates();
+        $template = new RZP_Templates();
         $template->display_title();
     }
 
@@ -71,7 +71,7 @@ class RZP_Settings
     **/
     function display_description()
     {
-    	$template = new RZP_Templates();
+        $template = new RZP_Templates();
         $template->display_description();
     }
 
@@ -80,7 +80,7 @@ class RZP_Settings
     **/
     function display_key_id()
     {
-    	$template = new RZP_Templates();
+        $template = new RZP_Templates();
         $template->display_key_id();
     }
 
@@ -89,7 +89,7 @@ class RZP_Settings
     **/
     function display_key_secret()
     {
-    	$template = new RZP_Templates();
+        $template = new RZP_Templates();
         $template->display_key_secret();
     }
 
@@ -97,7 +97,7 @@ class RZP_Settings
      * Payment action field of settings page
     **/
     function display_payment_action(){
-    	$template = new RZP_Templates();
+        $template = new RZP_Templates();
         $template->display_payment_action();
     }
 }

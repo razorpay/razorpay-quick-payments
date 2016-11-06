@@ -53,9 +53,10 @@ function wordpress_razorpay_init()
 
             // Creates a customizable tag for us to place our pay button anywhere using [RZP]
         	add_shortcode('RZP', array($this, 'wordpress_razorpay'));
+            // Order is created before response is checked, and is done by giving a lower priority
+            add_action('init', array($this, 'razorpay_order_creation_response'),9);
             // check_razorpay_response is called when form data is sent to admin-post.php
-            add_action( 'init', array($this,'order_creation_response'),9);
-            add_action( 'init', array($this,'wp_check_razorpay_response'));
+            add_action('init', array($this, 'wp_check_razorpay_response'),10);
         }
 
 		/**
@@ -63,7 +64,7 @@ function wordpress_razorpay_init()
 		**/
 	    function wordpress_razorpay()
 	    {
-			$html = $this->generate_order_form();
+			$html = $this->generate_razorpay_order_form();
 
 	    	return $html;
 	    }
@@ -71,7 +72,7 @@ function wordpress_razorpay_init()
         /**
          * Generates the order form
         **/
-        function generate_order_form()
+        function generate_razorpay_order_form()
         {
             // admin-post.php is a file that contains methods for us to process HTTP requests
             $redirect_url = esc_url( admin_url('admin-post.php') ); 
@@ -80,7 +81,7 @@ function wordpress_razorpay_init()
 
             $amount = (int)(get_post_meta($pageID,'amount')[0]);
 
-        	$button_html = file_get_contents(__DIR__.'/frontend/checkout.php');
+        	$button_html = file_get_contents(__DIR__.'/frontend/checkout.phtml');
 
             // Replacing placeholders in the HTML with PHP variables for the form to be handled correctly 
             $keys = array("#liveurl#","#redirect_url#","#amount#","#pageID#");
@@ -92,7 +93,7 @@ function wordpress_razorpay_init()
         }
 
 
-        function order_creation_response()
+        function razorpay_order_creation_response()
         {
             if (!empty($_GET['page_id']))
             {
@@ -129,7 +130,7 @@ function wordpress_razorpay_init()
 
                 $json = json_encode($razorpay_args);
 
-                print_r($json);
+                echo $json;
             }
         }
 
@@ -270,7 +271,7 @@ function wordpress_razorpay_init()
                     $this->msg['message'] = 'Thank you for shopping with us. However, the payment failed.';
                 }
 
-                print_r($this->msg['message']);
+                echo ($this->msg['message']);
             }
         }
 
