@@ -54,7 +54,6 @@ class RZP_Settings
     {
         $template = new RZP_Templates();
         $template->displayEnable();
-
     }
 
     /**

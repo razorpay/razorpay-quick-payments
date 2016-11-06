@@ -59,7 +59,6 @@ function wordpressRazorpayInit()
 	    function wordpressRazorpay()
 	    {
 			$html = $this->generateRazorpayOrderForm();
-
 	    	return $html;
 	    }
 
@@ -280,5 +279,4 @@ function wordpressRazorpayInit()
     }
 
     $GLOBALS['razorpay'] = createRazorpayPaymentGateway();
-
 }
