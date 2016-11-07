@@ -15,7 +15,7 @@ class RZP_Settings
     /**
      * Creating up the settings page for the plug-in on the menu page
     **/
-    function wordpress_razorpay_admin_setup()
+    function wordpressRazorpayAdminSetup()
     {
     	add_menu_page('Razorpay Payment Gateway', 'Razorpay', 'manage_options', 'razorpay', array($this,'adminOptions'));
     }
