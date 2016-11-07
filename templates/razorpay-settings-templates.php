@@ -26,25 +26,25 @@ class RZP_Templates
     **/
     function displayOptions()
     {
-    	add_settings_section('razorpay_fields','Edit Settings', array($this,'display_header'), 'razorpay_sections');
+    	add_settings_section('razorpay_fields','Edit Settings', array($this,'displayHeader'), 'razorpay_sections');
 
     	// Enabled/Disabled Field
-    	add_settings_field('enabled_field','Enabled/Disabled', array($this,'display_enable'),'razorpay_sections','razorpay_fields');
+    	add_settings_field('enabled_field','Enabled/Disabled', array($this,'displayEnable'),'razorpay_sections','razorpay_fields');
     	register_setting('razorpay_fields','enabled_field');
 
-    	add_settings_field('title_field','Title', array($this,'display_title'),'razorpay_sections','razorpay_fields');
+    	add_settings_field('title_field','Title', array($this,'displayTitle'),'razorpay_sections','razorpay_fields');
     	register_setting('razorpay_fields','title_field');
 
-    	add_settings_field('description_field','Description', array($this,'display_description'),'razorpay_sections','razorpay_fields');
+    	add_settings_field('description_field','Description', array($this,'displayDescription'),'razorpay_sections','razorpay_fields');
     	register_setting('razorpay_fields', 'description_field');
 
-    	add_settings_field('key_id_field','Key_id', array($this,'display_key_id'),'razorpay_sections','razorpay_fields');
+    	add_settings_field('key_id_field','Key_id', array($this,'displayKeyID'),'razorpay_sections','razorpay_fields');
     	register_setting('razorpay_fields', 'key_id_field');
 
-    	add_settings_field('key_secret_field','Key_secret', array($this,'display_key_secret'),'razorpay_sections','razorpay_fields');
+    	add_settings_field('key_secret_field','Key_secret', array($this,'displayKeySecret'),'razorpay_sections','razorpay_fields');
     	register_setting('razorpay_fields', 'key_secret_field');
 
-    	add_settings_field('payment_action_field','Payment_action', array($this,'display_payment_action'),'razorpay_sections','razorpay_fields');
+    	add_settings_field('payment_action_field','Payment_action', array($this,'displayPaymentAction'),'razorpay_sections','razorpay_fields');
     	register_setting('razorpay_fields','payment_action_field');
     }
 
