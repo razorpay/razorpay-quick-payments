@@ -72,15 +72,23 @@ function wordpressRazorpayInit()
 
             $pageID = get_the_ID();
 
-            $amount = (int)(get_post_meta($pageID,'amount')[0]);
+            $amount = (int)(get_post_meta($pageID,'amount')[0])*100;
 
-            $button_html = file_get_contents(__DIR__.'/frontend/checkout.phtml');
+            if (isset($this->key_id) && isset($this->key_secret) && $amount!=null)
+            {
+                $button_html = file_get_contents(__DIR__.'/frontend/checkout.phtml');
 
-            // Replacing placeholders in the HTML with PHP variables for the form to be handled correctly
-            $keys = array("#liveurl#","#redirect_url#","#amount#","#pageID#");
-            $values = array($this->liveurl,$redirect_url,$amount,$pageID);
+                // Replacing placeholders in the HTML with PHP variables for the form to be handled correctly
+                $keys = array("#liveurl#","#redirect_url#","#amount#","#pageID#");
+                $values = array($this->liveurl,$redirect_url,$amount,$pageID);
 
-            $html = str_replace($keys,$values,$button_html);
+                $html = str_replace($keys,$values,$button_html);
+            }
+
+            else
+            { 
+                $html =  null;
+            }
 
             return $html;
         }
@@ -95,7 +103,7 @@ function wordpressRazorpayInit()
 
                 // Create a custom field and call it 'amount', and assign the value in paise
                 $pageID = $_GET['page_id'];
-                $amount = (int)(get_post_meta($pageID,'amount')[0]);
+                $amount = (int)(get_post_meta($pageID,'amount')[0])*100;
 
                 $productinfo = $this->getProductDecription($pageID, $order_id);
 
@@ -139,7 +147,7 @@ function wordpressRazorpayInit()
 
                 // If name isn't set, default is the title of the page
                 default:
-                    $name = get_the_title($pageID);
+                    $name = get_bloginfo('name');
                     break;
             }
 
@@ -157,7 +165,7 @@ function wordpressRazorpayInit()
 
                 // If name isn't set, default is the title of the page
                 default:
-                    $description = "Order $order_id";
+                    $description = get_the_title($pageID);
                     break;
             }
 
