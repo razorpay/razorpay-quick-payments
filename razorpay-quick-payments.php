@@ -206,7 +206,7 @@ function wordpressRazorpayInit()
          **/
         function wpCheckRazorpayResponse()
         {
-            if (!empty($_POST['razorpay_payment_id']))
+            if (!empty($_POST['razorpay_payment_id']) && !empty($_POST['order_amount']))
             {
                 // Transient variables can be used to store variables in cache
                 $razorpay_order_id = get_transient('razorpay_order_id');
