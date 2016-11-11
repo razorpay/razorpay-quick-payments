@@ -79,10 +79,10 @@ function wordpressRazorpayInit()
                 $button_html = file_get_contents(__DIR__.'/frontend/checkout.phtml');
 
                 // Replacing placeholders in the HTML with PHP variables for the form to be handled correctly
-                $keys = array("#liveurl#","#redirect_url#","#amount#","#pageID#");
-                $values = array($this->liveurl,$redirect_url,$amount,$pageID);
+                $keys = array("#liveurl#", "#redirect_url#", "#amount#", "#pageID#");
+                $values = array($this->liveurl, $redirect_url, $amount, $pageID);
 
-                $html = str_replace($keys,$values,$button_html);
+                $html = str_replace($keys, $values, $button_html);
             }
 
             else
@@ -220,15 +220,15 @@ function wordpressRazorpayInit()
 
                 $success = false;
                 $error = "";
-                $captured = false;
 
                 $api = new Api($key_id, $key_secret);
+                $payment = $api->payment->fetch($razorpay_payment_id);
 
                 try
                 {
-                    if ($this->payment_action === 'authorize')
+                    if ($this->payment_action === 'Authorize' && $amount === $payment['amount']/100)
                     {
-                        $payment = $api->payment->fetch($razorpay_payment_id);
+                        $success = true;   
                     }
                     else
                     {
@@ -238,20 +238,14 @@ function wordpressRazorpayInit()
 
                         if (hash_equals($signature , $razorpay_signature))
                         {
-                            $captured = true;
+                            $success = true;
                         }
-                    }
 
-                    //Check success response
-                    if ($captured)
-                    {
-                        $success = true;
-                    }
-
-                    else{
-                        $success = false;
-
-                        $error = "PAYMENT_ERROR = Payment failed";
+                        else
+                        {
+                            $success = false;
+                            $error = "PAYMENT_ERROR = Payment failed";
+                        }
                     }
                 }
                 catch (Exception $e)
