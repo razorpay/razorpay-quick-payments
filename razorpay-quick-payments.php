@@ -32,9 +32,9 @@ function wordpressRazorpayInit()
             // initializing our object with all the setting variables
             $this->title = get_option('title_field');
             $this->description = get_option('description_field');
-            $this->key_id = get_option('key_id_field');
-            $this->key_secret = get_option('key_secret_field');
-            $this->payment_action = get_option('payment_action_field');
+            $this->keyID = get_option('key_id_field');
+            $this->keySecret = get_option('key_secret_field');
+            $this->paymentAction = get_option('payment_action_field');
 
             // The checkout function is released when the pay now button is clicked
             $this->liveurl = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -68,21 +68,21 @@ function wordpressRazorpayInit()
         function generateRazorpayOrderForm()
         {
             // admin-post.php is a file that contains methods for us to process HTTP requests
-            $redirect_url = esc_url( admin_url('admin-post.php') );
+            $redirectUrl = esc_url( admin_url('admin-post.php') );
 
             $pageID = get_the_ID();
 
             $amount = (int)(get_post_meta($pageID,'amount')[0])*100;
 
-            if (isset($this->key_id) && isset($this->key_secret) && $amount!=null)
+            if (isset($this->keyID) && isset($this->keySecret) && $amount!=null)
             {
-                $button_html = file_get_contents(__DIR__.'/frontend/checkout.phtml');
+                $buttonHtml = file_get_contents(__DIR__.'/frontend/checkout.phtml');
 
                 // Replacing placeholders in the HTML with PHP variables for the form to be handled correctly
-                $keys = array("#liveurl#", "#redirect_url#", "#amount#", "#pageID#");
-                $values = array($this->liveurl, $redirect_url, $amount, $pageID);
+                $keys = array("#liveurl#", "#redirectUrl#", "#amount#", "#pageID#");
+                $values = array($this->liveurl, $redirectUrl, $amount, $pageID);
 
-                $html = str_replace($keys, $values, $button_html);
+                $html = str_replace($keys, $values, $buttonHtml);
             }
 
             else
@@ -99,37 +99,37 @@ function wordpressRazorpayInit()
             if (!empty($_GET['page_id']))
             {
                 // Random order ID
-                $order_id = mt_rand(0,mt_getrandmax());
+                $orderID = mt_rand(0,mt_getrandmax());
 
                 // Create a custom field and call it 'amount', and assign the value in paise
                 $pageID = $_GET['page_id'];
                 $amount = (int)(get_post_meta($pageID,'amount')[0])*100;
 
-                $productinfo = $this->getProductDecription($pageID, $order_id);
+                $productinfo = $this->getProductDecription($pageID);
 
                 $name = $this->getProductName($pageID);
 
-                $api = new Api($this->key_id, $this->key_secret);
+                $api = new Api($this->keyID, $this->keySecret);
 
                 // Calls the helper function to create order data
-                $data = $this->getOrderCreationData($order_id, $amount);
+                $data = $this->getOrderCreationData($orderID, $amount);
 
-                $razorpay_order = $api->order->create($data);
+                $razorpayOrder = $api->order->create($data);
 
                 // Stores the data as a cached variable temporarily
-                set_transient('razorpay_order_id', $razorpay_order['id']);
+                set_transient('razorpay_order_id', $razorpayOrder['id']);
 
                 // Have to figure this out for a general case
-                $razorpay_args = array(
-                  'key' => $this->key_id,
+                $razorpayArgs = array(
+                  'key' => $this->keyID,
                   'name' => $name,
                   'amount' => $amount,
                   'currency' => 'INR',
                   'description' => $productinfo,
-                  'order_id' => $razorpay_order['id'] //-------> Add this to the json later
+                  'order_id' => $razorpayOrder['id'] //-------> Add this to the json later
                 );
 
-                $json = json_encode($razorpay_args);
+                $json = json_encode($razorpayArgs);
 
                 echo $json;
             }
@@ -154,7 +154,7 @@ function wordpressRazorpayInit()
             return $name;
         }
 
-        function getProductDecription($pageID, $order_id)
+        function getProductDecription($pageID)
         {
             // Set custom field on page called 'name' to name of the product or whatever you like
             switch (!is_null(get_post_meta($pageID,'description')))
@@ -175,30 +175,27 @@ function wordpressRazorpayInit()
         /**
          * Creates orders API data
         **/
-        function getOrderCreationData($order_id, $amount)
+        function getOrderCreationData($orderID, $amount)
         {
-            switch ($this->payment_action)
-            {
-                case 'authorize':
-                    $data = array(
-                      'receipt' => $order_id,
-                      'amount' => $amount,
-                      'currency' => 'INR',
-                      'payment_capture' => 0
-                    );
-                    break;
+            $data =$this->getDefaultOrderCreationData($orderID, $amount);
 
-                default:
-                    $data = array(
-                      'receipt' => $order_id,
-                      'amount' => $amount,
-                      'currency' => 'INR',
-                      'payment_capture' => 1
-                    );
-                    break;
-            }
+            $captureSwitch = [
+                'authorize' =>  0,
+                'capture'   =>  1
+            ];
+
+            $data['payment_capture'] = $captureSwitch[$this->paymentAction];
 
             return $data;
+        }
+
+        protected function getDefaultOrderCreationData($orderID, $amount)
+        {
+            return array(
+                'receipt' => $orderID,
+                'amount' => $amount,
+                'currency' => 'INR',
+            );
         }
 
         /**
@@ -209,34 +206,34 @@ function wordpressRazorpayInit()
             if (!empty($_POST['razorpay_payment_id']) && !empty($_POST['order_amount']))
             {
                 // Transient variables can be used to store variables in cache
-                $razorpay_order_id = get_transient('razorpay_order_id');
+                $razorpayOrderID = get_transient('razorpay_order_id');
 
-                $razorpay_payment_id = $_POST['razorpay_payment_id'];
+                $razorpayPaymentID = $_POST['razorpay_payment_id'];
 
-                $key_id = $this->key_id;
-                $key_secret = $this->key_secret;
+                $keyID = $this->keyID;
+                $keySecret = $this->keySecret;
 
                 $amount = $_POST['order_amount']/100; // paise to rupees
 
                 $success = false;
                 $error = "";
 
-                $api = new Api($key_id, $key_secret);
-                $payment = $api->payment->fetch($razorpay_payment_id);
+                $api = new Api($keyID, $keySecret);
+                $payment = $api->payment->fetch($razorpayPaymentID);
 
                 try
                 {
-                    if ($this->payment_action === 'Authorize' && $amount === $payment['amount']/100)
+                    if ($this->paymentAction === 'authorize' && $amount === $payment['amount']/100)
                     {
                         $success = true;   
                     }
                     else
                     {
-                        $razorpay_signature = $_POST['razorpay_signature'];
+                        $razorpaySignature = $_POST['razorpay_signature'];
 
-                        $signature = hash_hmac('sha256', $razorpay_order_id . '|' . $razorpay_payment_id, $key_secret);
+                        $signature = hash_hmac('sha256', $razorpayOrderID . '|' . $razorpayPaymentID, $keySecret);
 
-                        if (hash_equals($signature , $razorpay_signature))
+                        if (hash_equals($signature , $razorpaySignature))
                         {
                             $success = true;
                         }
@@ -256,7 +253,7 @@ function wordpressRazorpayInit()
 
                 if ($success === true)
                 {
-                    $this->msg['message'] = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."."<br><br>"."Transaction ID: $razorpay_payment_id"."<br><br>"."Order Amount: ₹$amount";
+                    $this->msg['message'] = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."."<br><br>"."Transaction ID: $razorpayPaymentID"."<br><br>"."Order Amount: ₹$amount";
 
                     $this->msg['class'] = 'success';
                 }

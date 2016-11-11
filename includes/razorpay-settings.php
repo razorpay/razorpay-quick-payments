@@ -10,6 +10,8 @@ class RZP_Settings
         add_action('admin_menu', array($this,'wordpressRazorpayAdminSetup'));
         // Initializes display options when admin page is initialized
         add_action('admin_init', array($this,'displayOptions'));
+
+        $this->template = new RZP_Templates();
     }
     
     /**
@@ -25,8 +27,7 @@ class RZP_Settings
     **/
     function adminOptions()
     {
-        $template = new RZP_Templates();
-        $template->adminOptions();
+        $this->template->adminOptions();
     }
 
     /**
@@ -34,8 +35,7 @@ class RZP_Settings
     **/
     function displayOptions()
     {
-        $template = new RZP_Templates();
-        $template->displayOptions();
+        $this->template->displayOptions();
     }
 
     /**
@@ -43,8 +43,7 @@ class RZP_Settings
     **/        
     function displayHeader()
     {
-        $template = new RZP_Templates();
-        $template->displayHeader();
+        $this->template->displayHeader();
     }
 
     /**
@@ -52,8 +51,7 @@ class RZP_Settings
     **/
     function displayEnable()
     {
-        $template = new RZP_Templates();
-        $template->displayEnable();
+        $this->template->displayEnable();
     }
 
     /**
@@ -61,8 +59,7 @@ class RZP_Settings
     **/
     function displayTitle()
     {	
-        $template = new RZP_Templates();
-        $template->displayTitle();
+        $this->template->displayTitle();
     }
 
     /**
@@ -70,8 +67,7 @@ class RZP_Settings
     **/
     function displayDescription()
     {
-        $template = new RZP_Templates();
-        $template->displayDescription();
+        $this->template->displayDescription();
     }
 
     /**
@@ -79,8 +75,7 @@ class RZP_Settings
     **/
     function displayKeyID()
     {
-        $template = new RZP_Templates();
-        $template->displayKeyID();
+        $this->template->displayKeyID();
     }
 
     /**
@@ -88,15 +83,14 @@ class RZP_Settings
     **/
     function displayKeySecret()
     {
-        $template = new RZP_Templates();
-        $template->displayKeySecret();
+        $this->template->displayKeySecret();
     }
 
     /**
      * Payment action field of settings page
     **/
-    function displayPaymentAction(){
-        $template = new RZP_Templates();
-        $template->displayPaymentAction();
+    function displayPaymentAction()
+    {
+        $this->template->displayPaymentAction();
     }
 }

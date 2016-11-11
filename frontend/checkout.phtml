@@ -75,7 +75,7 @@
 
 <script src="#liveurl#"></script>
 
-<form name='razorpayform' id="paymentform" action="#redirect_url#" method="POST">
+<form name='razorpayform' id="paymentform" action="#redirectUrl#" method="POST">
     <input type="hidden" name="order_amount" value="#amount#">
     <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
     <input type="hidden" name="razorpay_signature"  id="razorpay_signature" >
@@ -102,7 +102,7 @@ jQuery(document).ready(function( $ ){
     function createOrder()
     {
         $.ajax({
-            url: "#redirect_url#" + "?action=create_order&page_id=" + "#pageID#",
+            url: "#redirectUrl#" + "?action=create_order&page_id=" + "#pageID#",
             type: 'GET',
             success: function(order) 
             {  
@@ -116,7 +116,7 @@ jQuery(document).ready(function( $ ){
                     var form_data = $('form').serializeArray();
                     
                     $.ajax({
-                        url: "#redirect_url#", 
+                        url: "#redirectUrl#", 
                         data: form_data,
                         type: 'POST',
                         success: function(response){

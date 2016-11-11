@@ -73,12 +73,7 @@ class RZP_Templates
     **/
     function displayTitle()
     {   
-        $default = get_option('title_field'); 
-                    
-        if ($default == "")
-        {
-            $default = "Credit Card/Debit Card/NetBanking";
-        }
+        $default = get_option('title_field', "Credit Card/Debit Card/NetBanking"); 
 
         echo
             '<input type="text" name="title_field" id="title" size="35" value="' .$default. '" /><br>
@@ -90,12 +85,7 @@ class RZP_Templates
     **/
     function displayDescription()
     {
-        $default = get_option('description_field'); 
-                    
-        if ($default == "")
-        {
-            $default = "Pay securely by Credit or Debit card or internet banking through Razorpay";
-        }
+        $default = get_option('description_field', "Pay securely by Credit or Debit card or internet banking through Razorpay"); 
 
         echo
             '<input type="text" name="description_field" id="description" size="35" value="' .$default. '" /><br>
@@ -136,8 +126,8 @@ class RZP_Templates
 
         echo
             '<select name="payment_action_field" id="payment_action" value="' .$default. '" />
-                <option>Authorize and Capture</option>
-                <option>Authorize</option>
+                <option value="capture">Authorize and Capture</option>
+                <option value="authorize">Authorize</option>
             </select>
             <br>
             <label for ="payment_action">Payment action when order is compelete.</label>';
