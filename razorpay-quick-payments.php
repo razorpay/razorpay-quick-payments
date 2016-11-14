@@ -98,7 +98,9 @@ function wordpressRazorpayInit()
         {
             $pageID = get_the_ID();
 
-            $amount = (int)(get_post_meta($pageID, 'amount')[0])*100;
+            $metadata = get_post_meta($pageID);
+
+            $amount = (int)($metadata['amount'][0])*100;
 
             if (isset($this->keyID) && isset($this->keySecret) && $amount!=null)
             {
@@ -126,11 +128,14 @@ function wordpressRazorpayInit()
 
                 // Create a custom field and call it 'amount', and assign the value in paise
                 $pageID = $_GET['page_id'];
-                $amount = (int)(get_post_meta($pageID, 'amount')[0])*100;
 
-                $productinfo = $this->getProductDecription($pageID);
+                $metadata = get_post_meta($pageID);
 
-                $name = $this->getProductName($pageID);
+                $amount = (int)($metadata['amount'][0])*100;
+
+                $productinfo = $this->getProductDecription($metadata);
+
+                $name = $this->getProductName($metadata);
 
                 $api = new Api($this->keyID, $this->keySecret);
 
@@ -142,14 +147,13 @@ function wordpressRazorpayInit()
                 // Stores the data as a cached variable temporarily
                 set_transient('razorpay_order_id', $razorpayOrder['id']);
 
-                // Have to figure this out for a general case
                 $razorpayArgs = array(
                   'key' => $this->keyID,
                   'name' => $name,
                   'amount' => $amount,
                   'currency' => 'INR',
                   'description' => $productinfo,
-                  'order_id' => $razorpayOrder['id'] //-------> Add this to the json later
+                  'order_id' => $razorpayOrder['id'] 
                 );
 
                 $json = json_encode($razorpayArgs);
@@ -159,12 +163,12 @@ function wordpressRazorpayInit()
         }
 
 
-        function getProductName($pageID)
+        function getProductName($metadata)
         {
             // Set custom field on page called 'name' to name of the product or whatever you like
-            if (!is_null(get_post_meta($pageID, 'name')))
+            if (!is_null($metadata['name'][0]))
             {
-                $name = get_post_meta($pageID, 'name')[0];
+                $name = $metadata['name'][0];
             }
 
             // If name isn't set, default is the title of the page
@@ -176,12 +180,12 @@ function wordpressRazorpayInit()
             return $name;
         }
 
-        function getProductDecription($pageID)
+        function getProductDecription($metadata)
         {
             // Set custom field on page called 'name' to name of the product or whatever you like
-            if (!is_null(get_post_meta($pageID, 'description')))
+            if (!is_null($metadata['description'][0]))
             {
-                $description = get_post_meta($pageID, 'description')[0];
+                $description = $metadata['description'][0];
             }
 
             // If name isn't set, default is the title of the page
