@@ -19,13 +19,19 @@ add_action('plugins_loaded', 'wordpressRazorpayInit', 0); // not sure if this is
 
 function wordpressRazorpayInit()
 {
-    // Add a check to see if the class already exists. Good practice.
-
+    // Adding constants 
     if (!defined('RZP_BASE_NAME'))
     {
         define('RZP_BASE_NAME', plugin_basename(__FILE__));
     }
 
+    if (!defined('RZP_REDIRECT_URL'))
+    {
+        // admin-post.php is a file that contains methods for us to process HTTP requests
+        define('RZP_REDIRECT_URL', esc_url( admin_url('admin-post.php') ));
+    }
+
+    // The main plug in class
     class WP_Razorpay
     {
         public function __construct()
@@ -45,8 +51,7 @@ function wordpressRazorpayInit()
             // The checkout function is released when the pay now button is clicked
             $this->liveurl = 'https://checkout.razorpay.com/v1/checkout.js';
 
-            $this->msg['message'] = "";
-            $this->msg['class'] = "";
+            $this->message = "";
 
             // Creates the settings page
             $settings = new RZP_Settings();
@@ -57,7 +62,7 @@ function wordpressRazorpayInit()
             add_action('init', array($this, 'razorpayOrderCreationResponse'),9);
             // check_razorpay_response is called when form data is sent to admin-post.php
             add_action('init', array($this, 'wpCheckRazorpayResponse'),10);
-            // Adding links on the plug in page
+            // Adding links on the plugin page for docs, support and settings
             add_filter('plugin_action_links_' . RZP_BASE_NAME, array($this, 'razorpayPluginLinks'));
         }
 
@@ -66,13 +71,13 @@ function wordpressRazorpayInit()
         **/
         function razorpayPluginLinks($links)
         {
-            $settingsLink = '<a href="'. esc_url(admin_url('admin.php?page=razorpay')) .'">Settings</a>';
-            $docsLink = '<a href="https://github.com/razorpay/razorpay-quick-payments">Docs</a>';
-            $supportLink = '<a href="https://razorpay.com/contact/">Support</a>';
+            $pluginLinks = array(
+                            'settings' => '<a href="'. esc_url(admin_url('admin.php?page=razorpay')) .'">Settings</a>',
+                            'docs' => '<a href="https://github.com/razorpay/razorpay-quick-payments">Docs</a>',
+                            'support' => '<a href="https://razorpay.com/contact/">Support</a>'
+                        );
 
-            array_push($links, $settingsLink);
-            array_push($links, $docsLink);
-            array_push($links, $supportLink);
+            $links = array_merge($links, $pluginLinks);
 
             return $links;
         }
@@ -91,9 +96,6 @@ function wordpressRazorpayInit()
         **/
         function generateRazorpayOrderForm()
         {
-            // admin-post.php is a file that contains methods for us to process HTTP requests
-            $redirectUrl = esc_url( admin_url('admin-post.php') );
-
             $pageID = get_the_ID();
 
             $amount = (int)(get_post_meta($pageID, 'amount')[0])*100;
@@ -104,7 +106,7 @@ function wordpressRazorpayInit()
 
                 // Replacing placeholders in the HTML with PHP variables for the form to be handled correctly
                 $keys = array("#liveurl#", "#redirectUrl#", "#amount#", "#pageID#");
-                $values = array($this->liveurl, $redirectUrl, $amount, $pageID);
+                $values = array($this->liveurl, RZP_REDIRECT_URL, $amount, $pageID);
 
                 $html = str_replace($keys, $values, $buttonHtml);
 
@@ -196,7 +198,7 @@ function wordpressRazorpayInit()
         **/
         function getOrderCreationData($orderID, $amount)
         {
-            $data =$this->getDefaultOrderCreationData($orderID, $amount);
+            $data = $this->getDefaultOrderCreationData($orderID, $amount);
 
             // capture switch is dependent on the setting selected 
             $captureSwitch = [
@@ -262,7 +264,7 @@ function wordpressRazorpayInit()
                         else
                         {
                             $success = false;
-                            $error = "PAYMENT_ERROR = Payment failed";
+                            $error = "PAYMENT_ERROR: Payment failed";
                         }
                     }
                 }
@@ -274,14 +276,14 @@ function wordpressRazorpayInit()
 
                 if ($success === true)
                 {
-                    $this->msg['message'] = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."."<br><br>"."Transaction ID: $razorpayPaymentID"."<br><br>"."Order Amount: ₹$amount";
+                    $this->message = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."."<br><br>"."Transaction ID: $razorpayPaymentID"."<br><br>"."Order Amount: ₹$amount";
                 }
                 else
                 {
-                    $this->msg['message'] = 'Thank you for shopping with us. However, the payment failed.';
+                    $this->message = 'Thank you for shopping with us. However, the payment failed.';
                 }
 
-                echo ($this->msg['message']);
+                echo ($this->message);
             }
         }
 

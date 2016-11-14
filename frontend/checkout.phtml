@@ -106,6 +106,7 @@ jQuery(document).ready(function( $ ){
             type: 'GET',
             success: function(order) 
             {  
+                console.log(order);
                 rzp_order = JSON.parse(order);
                 
                 rzp_order.handler = function(payment)

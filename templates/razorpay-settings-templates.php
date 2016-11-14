@@ -56,7 +56,9 @@ RZP;
     **/ 
     function displayHeader()
     {
-        echo '<p>Razorpay is an online payment gateway for India with transparent pricing, seamless integration and great support</p>';
+        $header = '<p>Razorpay is an online payment gateway for India with transparent pricing, seamless integration and great support</p>';
+
+        echo $header;
     }
 
     /**
@@ -66,9 +68,12 @@ RZP;
     {
         $default = get_option('enabled_field');
 
-        echo
-            '<input type="checkbox" name="enabled_field" id="enable" value="' .$default. '" checked/>
-            <label for ="enable">Enable Razorpay Payment Module.</label>';      
+        $enable = <<<RZP
+<input type="checkbox" name="enabled_field" id="enable" value="{$default}" checked/>
+<label for ="enable">Enable Razorpay Payment Module.</label>      
+RZP;
+
+        echo $enable;
     }
 
     /**
@@ -78,9 +83,12 @@ RZP;
     {   
         $default = get_option('title_field', "Credit Card/Debit Card/NetBanking"); 
 
-        echo
-            '<input type="text" name="title_field" id="title" size="35" value="' .$default. '" /><br>
-            <label for ="title">This controls the title which the user sees during checkout.</label>';      
+        $title = <<<RZP
+<input type="text" name="title_field" id="title" size="35" value="{$default}" /><br>
+<label for ="title">This controls the title which the user sees during checkout.</label>
+RZP;
+    
+        echo $title;
     }
 
     /**
@@ -90,9 +98,12 @@ RZP;
     {
         $default = get_option('description_field', "Pay securely by Credit or Debit card or internet banking through Razorpay"); 
 
-        echo
-            '<input type="text" name="description_field" id="description" size="35" value="' .$default. '" /><br>
-            <label for ="description">This controls the display which the user sees during checkout.</label>';      
+        $description = <<<RZP
+<input type="text" name="description_field" id="description" size="35" value="{$default}" /><br>
+<label for ="description">This controls the display which the user sees during checkout.</label>
+RZP;
+
+        echo $description;
     }
 
     /**
@@ -102,10 +113,12 @@ RZP;
     {
         $default = get_option('key_id_field');
         
-        echo
-            '<input type="text" name="key_id_field" id="key_id" size="35" value="' .$default. '" /><br>
-            <label for ="key_id">The key Id and key secret can be generated from "API Keys" section of Razorpay Dashboard. Use test or live for test or live mode.</label>';
-        
+        $keyID = <<<RZP
+<input type="text" name="key_id_field" id="key_id" size="35" value="x$default}" /><br>
+<label for ="key_id">The key Id and key secret can be generated from "API Keys" section of Razorpay Dashboard. Use test or live for test or live mode.</label>
+RZP;
+
+        echo $keyID;
     }
 
     /**
@@ -115,9 +128,12 @@ RZP;
     {
         $default = get_option('key_secret_field');
         
-        echo
-            '<input type="text" name="key_secret_field" id="key_secret" size="35" value="' .$default. '" /><br>
-            <label for ="key_id">The key Id and key secret can be generated from "API Keys" section of Razorpay Dashboard. Use test or live for test or live mode.</label>';
+        $keySecret = <<<RZP
+<input type="text" name="key_secret_field" id="key_secret" size="35" value="{$default}" /><br>
+<label for ="key_id">The key Id and key secret can be generated from "API Keys" section of Razorpay Dashboard. Use test or live for test or live mode.</label>
+RZP;
+
+        echo $keySecret;
     }
 
     /**
@@ -127,12 +143,15 @@ RZP;
     {
         $default = get_option('payment_action_field');
 
-        echo
-            '<select name="payment_action_field" id="payment_action" value="' .$default. '" />
-                <option value="capture">Authorize and Capture</option>
-                <option value="authorize">Authorize</option>
-            </select>
-            <br>
-            <label for ="payment_action">Payment action when order is compelete.</label>';
+        $paymentAction = <<<RZP
+<select name="payment_action_field" id="payment_action" value="{$default}" />
+    <option value="capture">Authorize and Capture</option>
+    <option value="authorize">Authorize</option>
+</select>
+<br>
+<label for ="payment_action">Payment action when order is compelete.</label>
+RZP;
+
+        echo $paymentAction;
     }
 }
