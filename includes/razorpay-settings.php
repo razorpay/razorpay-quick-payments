@@ -7,19 +7,19 @@ class RZP_Settings
     public function __construct()
     {
         // Creates a new menu page for razorpay's settings
-        add_action('admin_menu', array($this,'wordpressRazorpayAdminSetup'));
+        add_action('admin_menu', array($this, 'wordpressRazorpayAdminSetup'));
         // Initializes display options when admin page is initialized
-        add_action('admin_init', array($this,'displayOptions'));
+        add_action('admin_init', array($this, 'displayOptions'));
 
         $this->template = new RZP_Templates();
     }
-    
+
     /**
      * Creating up the settings page for the plug-in on the menu page
     **/
     function wordpressRazorpayAdminSetup()
     {
-    	add_menu_page('Razorpay Payment Gateway', 'Razorpay', 'manage_options', 'razorpay', array($this,'adminOptions'));
+    	add_menu_page('Razorpay Payment Gateway', 'Razorpay', 'manage_options', 'razorpay', array($this, 'adminOptions'));
     }
 
     /**

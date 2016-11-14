@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Razorpay Quick Payments
  * Plugin URI: https://github.com/razorpay/razorpay-quick-payments
- * Description: Quick Payments for Wordpress, by Razorpay
+ * Description: Quick Payments for Wordpress, by Razorpay.
  * Version: 1.0.0
  * Author: Team Razorpay
  * Author URI: https://razorpay.com/about/
@@ -51,6 +51,24 @@ function wordpressRazorpayInit()
             add_action('init', array($this, 'razorpayOrderCreationResponse'),9);
             // check_razorpay_response is called when form data is sent to admin-post.php
             add_action('init', array($this, 'wpCheckRazorpayResponse'),10);
+            // Adding links on the plug in page
+            add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'razorpayPluginLinks'));
+        }
+
+        /**
+         * Creating the settings link from the plug ins page
+        **/
+        function razorpayPluginLinks($links)
+        {
+            $settingsLink = '<a href="'. esc_url(admin_url('admin.php?page=razorpay')) .'">Settings</a>';
+            $docsLink = '<a href="https://github.com/razorpay/razorpay-quick-payments"' . '>Docs</a>';
+            $supportLink = '<a href="https://razorpay.com/contact/"' . '>Support</a>';
+
+            array_push($links, $settingsLink);
+            array_push($links, $docsLink);
+            array_push($links, $supportLink);
+
+            return $links;
         }
 
         /**
