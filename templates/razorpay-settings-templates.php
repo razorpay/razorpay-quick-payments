@@ -7,17 +7,20 @@ class RZP_Templates
     **/
 	function adminOptions()
     {
-    	echo
-        	'<div class="wrap">
-    			<h2>Razorpay Payment Gateway</h2>
-    			<form action="options.php" method="POST">';
-                         
-    	            	settings_fields('razorpay_fields');
-    	            	do_settings_sections('razorpay_sections'); 
-    	            	submit_button(); 
-    	echo            
-    	        '</form>
-    	    </div>';
+        $settings_fields = 'settings_fields';
+        $settings_sections = 'do_settings_sections';
+        $submit = 'submit_button';
+
+    	$settings = <<<RZP
+<div class="wrap">
+	<h2>Razorpay Payment Gateway</h2>
+	<form action="options.php" method="POST">
+        	{$settings_fields('razorpay_fields')}
+        	{$settings_sections('razorpay_sections')} 
+        	{$submit}
+    </form>
+</div>
+RZP;
         
     }
 
@@ -26,26 +29,26 @@ class RZP_Templates
     **/
     function displayOptions()
     {
-    	add_settings_section('razorpay_fields','Edit Settings', array($this,'displayHeader'), 'razorpay_sections');
+    	add_settings_section('razorpay_fields', 'Edit Settings', array($this, 'displayHeader'), 'razorpay_sections');
 
     	// Enabled/Disabled Field
-    	add_settings_field('enabled_field','Enabled/Disabled', array($this,'displayEnable'),'razorpay_sections','razorpay_fields');
-    	register_setting('razorpay_fields','enabled_field');
+    	add_settings_field('enabled_field', 'Enabled/Disabled', array($this, 'displayEnable'), 'razorpay_sections', 'razorpay_fields');
+    	register_setting('razorpay_fields', 'enabled_field');
 
-    	add_settings_field('title_field','Title', array($this,'displayTitle'),'razorpay_sections','razorpay_fields');
-    	register_setting('razorpay_fields','title_field');
+    	add_settings_field('title_field', 'Title', array($this, 'displayTitle'), 'razorpay_sections', 'razorpay_fields');
+    	register_setting('razorpay_fields', 'title_field');
 
-    	add_settings_field('description_field','Description', array($this,'displayDescription'),'razorpay_sections','razorpay_fields');
+    	add_settings_field('description_field', 'Description', array($this, 'displayDescription'), 'razorpay_sections', 'razorpay_fields');
     	register_setting('razorpay_fields', 'description_field');
 
-    	add_settings_field('key_id_field','Key_id', array($this,'displayKeyID'),'razorpay_sections','razorpay_fields');
+    	add_settings_field('key_id_field', 'Key_id', array($this, 'displayKeyID'), 'razorpay_sections', 'razorpay_fields');
     	register_setting('razorpay_fields', 'key_id_field');
 
-    	add_settings_field('key_secret_field','Key_secret', array($this,'displayKeySecret'),'razorpay_sections','razorpay_fields');
+    	add_settings_field('key_secret_field', 'Key_secret', array($this, 'displayKeySecret'), 'razorpay_sections', 'razorpay_fields');
     	register_setting('razorpay_fields', 'key_secret_field');
 
-    	add_settings_field('payment_action_field','Payment_action', array($this,'displayPaymentAction'),'razorpay_sections','razorpay_fields');
-    	register_setting('razorpay_fields','payment_action_field');
+    	add_settings_field('payment_action_field', 'Payment_action', array($this, 'displayPaymentAction'), 'razorpay_sections', 'razorpay_fields');
+    	register_setting('razorpay_fields', 'payment_action_field');
     }
 
     /**
@@ -53,7 +56,7 @@ class RZP_Templates
     **/ 
     function displayHeader()
     {
-        echo '<p>' . 'Razorpay is an online payment gateway for India with transparent pricing, seamless integration and great support' . '</p>';
+        echo '<p>Razorpay is an online payment gateway for India with transparent pricing, seamless integration and great support</p>';
     }
 
     /**
@@ -64,7 +67,7 @@ class RZP_Templates
         $default = get_option('enabled_field');
 
         echo
-            '<input type="checkbox" name="enabled_field" id="enable" value="' .$default. 'he" checked/>
+            '<input type="checkbox" name="enabled_field" id="enable" value="' .$default. '" checked/>
             <label for ="enable">Enable Razorpay Payment Module.</label>';      
     }
 

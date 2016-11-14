@@ -20,13 +20,19 @@ add_action('plugins_loaded', 'wordpressRazorpayInit', 0); // not sure if this is
 function wordpressRazorpayInit()
 {
     // Add a check to see if the class already exists. Good practice.
+
+    if (!defined('RZP_BASE_NAME'))
+    {
+        define('RZP_BASE_NAME', plugin_basename(__FILE__));
+    }
+
     class WP_Razorpay
     {
         public function __construct()
         {
             $this->id = 'razorpay';
             $this->method = 'Razorpay';
-            $this->icon = plugins_url('images/logo.png',__FILE__);
+            $this->icon = plugins_url('images/logo.png', __FILE__);
             $this->has_fields = false;
 
             // initializing our object with all the setting variables
@@ -52,7 +58,7 @@ function wordpressRazorpayInit()
             // check_razorpay_response is called when form data is sent to admin-post.php
             add_action('init', array($this, 'wpCheckRazorpayResponse'),10);
             // Adding links on the plug in page
-            add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'razorpayPluginLinks'));
+            add_filter('plugin_action_links_' . RZP_BASE_NAME, array($this, 'razorpayPluginLinks'));
         }
 
         /**
@@ -61,8 +67,8 @@ function wordpressRazorpayInit()
         function razorpayPluginLinks($links)
         {
             $settingsLink = '<a href="'. esc_url(admin_url('admin.php?page=razorpay')) .'">Settings</a>';
-            $docsLink = '<a href="https://github.com/razorpay/razorpay-quick-payments"' . '>Docs</a>';
-            $supportLink = '<a href="https://razorpay.com/contact/"' . '>Support</a>';
+            $docsLink = '<a href="https://github.com/razorpay/razorpay-quick-payments">Docs</a>';
+            $supportLink = '<a href="https://razorpay.com/contact/">Support</a>';
 
             array_push($links, $settingsLink);
             array_push($links, $docsLink);
@@ -90,7 +96,7 @@ function wordpressRazorpayInit()
 
             $pageID = get_the_ID();
 
-            $amount = (int)(get_post_meta($pageID,'amount')[0])*100;
+            $amount = (int)(get_post_meta($pageID, 'amount')[0])*100;
 
             if (isset($this->keyID) && isset($this->keySecret) && $amount!=null)
             {
@@ -101,14 +107,11 @@ function wordpressRazorpayInit()
                 $values = array($this->liveurl, $redirectUrl, $amount, $pageID);
 
                 $html = str_replace($keys, $values, $buttonHtml);
+
+                return $html;
             }
 
-            else
-            { 
-                $html =  null;
-            }
-
-            return $html;
+            return null;
         }
 
 
@@ -117,11 +120,11 @@ function wordpressRazorpayInit()
             if (!empty($_GET['page_id']))
             {
                 // Random order ID
-                $orderID = mt_rand(0,mt_getrandmax());
+                $orderID = mt_rand(0, mt_getrandmax());
 
                 // Create a custom field and call it 'amount', and assign the value in paise
                 $pageID = $_GET['page_id'];
-                $amount = (int)(get_post_meta($pageID,'amount')[0])*100;
+                $amount = (int)(get_post_meta($pageID, 'amount')[0])*100;
 
                 $productinfo = $this->getProductDecription($pageID);
 
@@ -157,16 +160,15 @@ function wordpressRazorpayInit()
         function getProductName($pageID)
         {
             // Set custom field on page called 'name' to name of the product or whatever you like
-            switch (!is_null(get_post_meta($pageID,'name')))
+            if (!is_null(get_post_meta($pageID, 'name')))
             {
-                case true:
-                    $name = get_post_meta($pageID,'name')[0];
-                    break;
+                $name = get_post_meta($pageID, 'name')[0];
+            }
 
-                // If name isn't set, default is the title of the page
-                default:
-                    $name = get_bloginfo('name');
-                    break;
+            // If name isn't set, default is the title of the page
+            else
+            {
+                $name = get_bloginfo('name');
             }
 
             return $name;
@@ -175,16 +177,15 @@ function wordpressRazorpayInit()
         function getProductDecription($pageID)
         {
             // Set custom field on page called 'name' to name of the product or whatever you like
-            switch (!is_null(get_post_meta($pageID,'description')))
+            if (!is_null(get_post_meta($pageID, 'description')))
             {
-                case true:
-                    $description = get_post_meta($pageID,'description')[0];
-                    break;
+                $description = get_post_meta($pageID, 'description')[0];
+            }
 
-                // If name isn't set, default is the title of the page
-                default:
-                    $description = get_the_title($pageID);
-                    break;
+            // If name isn't set, default is the title of the page
+            else
+            {
+                $description = get_the_title($pageID);
             }
 
             return $description;
@@ -197,11 +198,13 @@ function wordpressRazorpayInit()
         {
             $data =$this->getDefaultOrderCreationData($orderID, $amount);
 
+            // capture switch is dependent on the setting selected 
             $captureSwitch = [
                 'authorize' =>  0,
                 'capture'   =>  1
             ];
 
+            // payment_capture is 1 if payment_action is set to capture, and 0 if it is set to authorize
             $data['payment_capture'] = $captureSwitch[$this->paymentAction];
 
             return $data;
@@ -272,12 +275,9 @@ function wordpressRazorpayInit()
                 if ($success === true)
                 {
                     $this->msg['message'] = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."."<br><br>"."Transaction ID: $razorpayPaymentID"."<br><br>"."Order Amount: ₹$amount";
-
-                    $this->msg['class'] = 'success';
                 }
                 else
                 {
-                    $this->msg['class'] = 'error';
                     $this->msg['message'] = 'Thank you for shopping with us. However, the payment failed.';
                 }
 
