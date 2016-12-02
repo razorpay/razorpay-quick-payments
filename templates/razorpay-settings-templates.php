@@ -7,21 +7,18 @@ class RZP_Templates
     **/
 	function adminOptions()
     {
-        $settings_fields = 'settings_fields';
-        $settings_sections = 'do_settings_sections';
-        $submit = 'submit_button';
+        echo
+            '<div class="wrap">
+                <h2>Razorpay Payment Gateway</h2>
+                <form action="options.php" method="POST">';
 
-    	$settings = <<<RZP
-<div class="wrap">
-	<h2>Razorpay Payment Gateway</h2>
-	<form action="options.php" method="POST">
-        	{$settings_fields('razorpay_fields')}
-        	{$settings_sections('razorpay_sections')} 
-        	{$submit}
-    </form>
-</div>
-RZP;
-        
+                    settings_fields('razorpay_fields');
+                    do_settings_sections('razorpay_sections');
+                    submit_button();
+
+        echo
+                '</form>
+            </div>';
     }
 
     /**
@@ -53,7 +50,7 @@ RZP;
 
     /**
      * Settings page header
-    **/ 
+    **/
     function displayHeader()
     {
         $header = '<p>Razorpay is an online payment gateway for India with transparent pricing, seamless integration and great support</p>';
@@ -70,7 +67,7 @@ RZP;
 
         $enable = <<<RZP
 <input type="checkbox" name="enabled_field" id="enable" value="{$default}" checked/>
-<label for ="enable">Enable Razorpay Payment Module.</label>      
+<label for ="enable">Enable Razorpay Payment Module.</label>
 RZP;
 
         echo $enable;
@@ -80,14 +77,14 @@ RZP;
      * Title field of settings page
     **/
     function displayTitle()
-    {   
-        $default = get_option('title_field', "Credit Card/Debit Card/NetBanking"); 
+    {
+        $default = get_option('title_field', "Credit Card/Debit Card/NetBanking");
 
         $title = <<<RZP
 <input type="text" name="title_field" id="title" size="35" value="{$default}" /><br>
 <label for ="title">This controls the title which the user sees during checkout.</label>
 RZP;
-    
+
         echo $title;
     }
 
@@ -96,7 +93,7 @@ RZP;
     **/
     function displayDescription()
     {
-        $default = get_option('description_field', "Pay securely by Credit or Debit card or internet banking through Razorpay"); 
+        $default = get_option('description_field', "Pay securely by Credit or Debit card or internet banking through Razorpay");
 
         $description = <<<RZP
 <input type="text" name="description_field" id="description" size="35" value="{$default}" /><br>
@@ -112,9 +109,9 @@ RZP;
     function displayKeyID()
     {
         $default = get_option('key_id_field');
-        
+
         $keyID = <<<RZP
-<input type="text" name="key_id_field" id="key_id" size="35" value="x$default}" /><br>
+<input type="text" name="key_id_field" id="key_id" size="35" value="{$default}" /><br>
 <label for ="key_id">The key Id and key secret can be generated from "API Keys" section of Razorpay Dashboard. Use test or live for test or live mode.</label>
 RZP;
 
@@ -127,7 +124,7 @@ RZP;
     function displayKeySecret()
     {
         $default = get_option('key_secret_field');
-        
+
         $keySecret = <<<RZP
 <input type="text" name="key_secret_field" id="key_secret" size="35" value="{$default}" /><br>
 <label for ="key_id">The key Id and key secret can be generated from "API Keys" section of Razorpay Dashboard. Use test or live for test or live mode.</label>

@@ -221,7 +221,7 @@ function wordpressRazorpayInit()
             return array(
                 'receipt' => $orderID,
                 'amount' => $amount,
-                'currency' => 'INR',
+                'currency' => 'INR'
             );
         }
 

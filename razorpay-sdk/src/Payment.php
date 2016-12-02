@@ -45,4 +45,11 @@ class Payment extends Entity
 
         return $refund;
     }
+
+    public function createRecurring($attributes = array())
+    {
+        $relativeUrl = $this->getEntityUrl() . '/create/recurring';
+
+        return $this->request('POST', $relativeUrl, $attributes);
+    }
 }
