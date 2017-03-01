@@ -10,7 +10,7 @@
  * License: GPL2
  */
 
-require_once __DIR__.'/razorpay-sdk/Razorpay.php';
+require_once __DIR__.'/razorpay-php/Razorpay.php';
 use Razorpay\Api\Api;
 
 require_once __DIR__.'/includes/razorpay-settings.php';
@@ -222,45 +222,32 @@ function wordpressRazorpayInit()
         {
             if (empty($_POST['razorpay_payment_id']) === false)
             {
-                // Using session variable
-                $razorpayOrderID = $_SESSION['razorpay_order_id'];
-
-                $razorpayPaymentID = $_POST['razorpay_payment_id'];
+                $attributes = array(
+                    'razorpay_payment_id' => $_POST['razorpay_payment_id'],
+                    'razorpay_order_id'   => $_SESSION['razorpay_order_id'],
+                    'razorpay_signature'  => $_POST['razorpay_signature']
+                );
 
                 $amount = $_SESSION['amount'] / 100; // paise to rupees
 
                 $success = false;
-                $error = "";
-
-                $api = new Api($this->keyID, $this->keySecret);
 
                 try
                 {
-                    $razorpaySignature = $_POST['razorpay_signature'];
+                    $api = new Api($this->keyID, $this->keySecret);
 
-                    $signature = hash_hmac('sha256', $razorpayOrderID . '|' . $razorpayPaymentID, $this->keySecret);
-
-                    // Refactor with new sdk
-                    if (hash_equals($signature , $razorpaySignature))
-                    {
-                        $success = true;
-                    }
-
-                    else
-                    {
-                        $success = false;
-                        $error = "PAYMENT_ERROR: Payment failed";
-                    }
+                    $success = $api->utility->verifyPaymentSignature($attributes);
                 }
                 catch (Exception $e)
                 {
                     $success = false;
-                    $error = 'WORDPRESS_ERROR: Request to Razorpay Failed';
+                    $error = 'WORDPRESS_ERROR: ' . $e->getMessage();
                 }
 
                 if ($success === true)
                 {
-                    $this->message = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."."<br><br>"."Transaction ID: $razorpayPaymentID"."<br><br>"."Order Amount: ₹$amount";
+                    $this->message = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."
+                    . "<br><br>" . "Transaction ID:" . $attributes['razorpay_payment_id'] . "<br><br>" . "Order Amount: ₹$amount";
                 }
                 else
                 {
