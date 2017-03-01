@@ -142,7 +142,7 @@ RZP;
 
         $paymentAction = <<<RZP
 <select name="payment_action_field" id="payment_action" value="{$default}" />
-    <option value="capture">Authorize and Capture</option>
+    <option value="capture" selected>Authorize and Capture</option>
     <option value="authorize">Authorize</option>
 </select>
 <br>

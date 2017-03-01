@@ -15,11 +15,13 @@ use Razorpay\Api\Api;
 
 require_once __DIR__.'/includes/razorpay-settings.php';
 
+session_start();
+
 add_action('plugins_loaded', 'wordpressRazorpayInit', 0); // not sure if this is the right hook
 
 function wordpressRazorpayInit()
 {
-    // Adding constants 
+    // Adding constants
     if (!defined('RZP_BASE_NAME'))
     {
         define('RZP_BASE_NAME', plugin_basename(__FILE__));
@@ -57,7 +59,7 @@ function wordpressRazorpayInit()
             $settings = new RZP_Settings();
 
             // Creates a customizable tag for us to place our pay button anywhere using [RZP]
-            add_shortcode('RZP', array($this, 'wordpressRazorpay'));
+            add_shortcode('RZP', array($this, 'checkout'));
             // Order is created before response is checked, and is done by giving a lower priority
             add_action('init', array($this, 'razorpayOrderCreationResponse'),9);
             // check_razorpay_response is called when form data is sent to admin-post.php
@@ -85,7 +87,7 @@ function wordpressRazorpayInit()
         /**
          * This method is used to generate the pay button using wordpress shortcode [RZP]
         **/
-        function wordpressRazorpay()
+        function checkout()
         {
             $html = $this->generateRazorpayOrderForm();
             return $html;
@@ -100,15 +102,17 @@ function wordpressRazorpayInit()
 
             $metadata = get_post_meta($pageID);
 
-            $amount = (int)($metadata['amount'][0])*100;
+            $amount = (int) ($metadata['amount'][0]) * 100;
 
             if (isset($this->keyID) && isset($this->keySecret) && $amount!=null)
             {
                 $buttonHtml = file_get_contents(__DIR__.'/frontend/checkout.phtml');
 
                 // Replacing placeholders in the HTML with PHP variables for the form to be handled correctly
-                $keys = array("#liveurl#", "#redirectUrl#", "#amount#", "#pageID#");
-                $values = array($this->liveurl, RZP_REDIRECT_URL, $amount, $pageID);
+                $keys = array("#liveurl#", "#redirectUrl#", "#pageID#");
+                $values = array($this->liveurl, RZP_REDIRECT_URL, $pageID);
+
+                $_SESSION['amount'] = $amount;
 
                 $html = str_replace($keys, $values, $buttonHtml);
 
@@ -121,7 +125,7 @@ function wordpressRazorpayInit()
 
         function razorpayOrderCreationResponse()
         {
-            if (!empty($_GET['page_id']))
+            if (empty($_GET['page_id']) === false)
             {
                 // Random order ID
                 $orderID = mt_rand(0, mt_getrandmax());
@@ -131,9 +135,9 @@ function wordpressRazorpayInit()
 
                 $metadata = get_post_meta($pageID);
 
-                $amount = (int)($metadata['amount'][0])*100;
+                $amount = (int) ($metadata['amount'][0]) * 100;
 
-                $productinfo = $this->getProductDecription($metadata);
+                $productInfo = $this->getProductDecription($metadata);
 
                 $name = $this->getProductName($metadata);
 
@@ -145,15 +149,15 @@ function wordpressRazorpayInit()
                 $razorpayOrder = $api->order->create($data);
 
                 // Stores the data as a cached variable temporarily
-                set_transient('razorpay_order_id', $razorpayOrder['id']);
+                $_SESSION['razorpay_order_id'] = $razorpayOrder['id'];
 
                 $razorpayArgs = array(
                   'key' => $this->keyID,
                   'name' => $name,
                   'amount' => $amount,
                   'currency' => 'INR',
-                  'description' => $productinfo,
-                  'order_id' => $razorpayOrder['id'] 
+                  'description' => $productInfo,
+                  'order_id' => $razorpayOrder['id']
                 );
 
                 $json = json_encode($razorpayArgs);
@@ -162,11 +166,10 @@ function wordpressRazorpayInit()
             }
         }
 
-
         function getProductName($metadata)
         {
             // Set custom field on page called 'name' to name of the product or whatever you like
-            if (!is_null($metadata['name'][0]))
+            if (is_null($metadata['name'][0]) === false)
             {
                 $name = $metadata['name'][0];
             }
@@ -183,7 +186,7 @@ function wordpressRazorpayInit()
         function getProductDecription($metadata)
         {
             // Set custom field on page called 'name' to name of the product or whatever you like
-            if (!is_null($metadata['description'][0]))
+            if (is_null($metadata['description'][0]) === false)
             {
                 $description = $metadata['description'][0];
             }
@@ -199,30 +202,17 @@ function wordpressRazorpayInit()
 
         /**
          * Creates orders API data
-        **/
+         **/
         function getOrderCreationData($orderID, $amount)
         {
-            $data = $this->getDefaultOrderCreationData($orderID, $amount);
-
-            // capture switch is dependent on the setting selected 
-            $captureSwitch = [
-                'authorize' =>  0,
-                'capture'   =>  1
-            ];
-
-            // payment_capture is 1 if payment_action is set to capture, and 0 if it is set to authorize
-            $data['payment_capture'] = $captureSwitch[$this->paymentAction];
-
-            return $data;
-        }
-
-        protected function getDefaultOrderCreationData($orderID, $amount)
-        {
-            return array(
+            $data = array(
                 'receipt' => $orderID,
                 'amount' => $amount,
-                'currency' => 'INR'
+                'currency' => 'INR',
+                'payment_capture' => ($this->paymentAction === 'authorize') ? 0 : 1
             );
+
+            return $data;
         }
 
         /**
@@ -230,46 +220,36 @@ function wordpressRazorpayInit()
          **/
         function wpCheckRazorpayResponse()
         {
-            if (!empty($_POST['razorpay_payment_id']) && !empty($_POST['order_amount']))
+            if (empty($_POST['razorpay_payment_id']) === false)
             {
-                // Transient variables can be used to store variables in cache
-                $razorpayOrderID = get_transient('razorpay_order_id');
+                // Using session variable
+                $razorpayOrderID = $_SESSION['razorpay_order_id'];
 
                 $razorpayPaymentID = $_POST['razorpay_payment_id'];
 
-                $keyID = $this->keyID;
-                $keySecret = $this->keySecret;
-
-                $amount = $_POST['order_amount']/100; // paise to rupees
+                $amount = $_SESSION['amount'] / 100; // paise to rupees
 
                 $success = false;
                 $error = "";
 
-                $api = new Api($keyID, $keySecret);
-                $payment = $api->payment->fetch($razorpayPaymentID);
+                $api = new Api($this->keyID, $this->keySecret);
 
                 try
                 {
-                    if ($this->paymentAction === 'authorize' && $amount === $payment['amount']/100)
+                    $razorpaySignature = $_POST['razorpay_signature'];
+
+                    $signature = hash_hmac('sha256', $razorpayOrderID . '|' . $razorpayPaymentID, $this->keySecret);
+
+                    // Refactor with new sdk
+                    if (hash_equals($signature , $razorpaySignature))
                     {
-                        $success = true;   
+                        $success = true;
                     }
+
                     else
                     {
-                        $razorpaySignature = $_POST['razorpay_signature'];
-
-                        $signature = hash_hmac('sha256', $razorpayOrderID . '|' . $razorpayPaymentID, $keySecret);
-
-                        if (hash_equals($signature , $razorpaySignature))
-                        {
-                            $success = true;
-                        }
-
-                        else
-                        {
-                            $success = false;
-                            $error = "PAYMENT_ERROR: Payment failed";
-                        }
+                        $success = false;
+                        $error = "PAYMENT_ERROR: Payment failed";
                     }
                 }
                 catch (Exception $e)
