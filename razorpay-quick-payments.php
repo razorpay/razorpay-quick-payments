@@ -137,7 +137,7 @@ function wordpressRazorpayInit()
 
                 $amount = (int) ($metadata['amount'][0]) * 100;
 
-                $productInfo = $this->getProductDecription($metadata);
+                $productInfo = $this->getProductDecription($metadata, $pageID);
 
                 $name = $this->getProductName($metadata);
 
@@ -169,7 +169,7 @@ function wordpressRazorpayInit()
         function getProductName($metadata)
         {
             // Set custom field on page called 'name' to name of the product or whatever you like
-            if (is_null($metadata['name'][0]) === false)
+            if (isset($metadata['name'][0]) and !empty($metadata['name'][0]))
             {
                 $name = $metadata['name'][0];
             }
@@ -183,10 +183,10 @@ function wordpressRazorpayInit()
             return $name;
         }
 
-        function getProductDecription($metadata)
+        function getProductDecription($metadata, $pageId)
         {
             // Set custom field on page called 'name' to name of the product or whatever you like
-            if (is_null($metadata['description'][0]) === false)
+            if (isset($metadata['description'][0]) and !empty($metadata['description'][0]))
             {
                 $description = $metadata['description'][0];
             }
@@ -194,7 +194,7 @@ function wordpressRazorpayInit()
             // If name isn't set, default is the title of the page
             else
             {
-                $description = get_the_title($pageID);
+                $description = get_the_title($pageId);
             }
 
             return $description;
