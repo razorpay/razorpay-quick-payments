@@ -104,11 +104,8 @@ jQuery(document).ready(function( $ ){
             url: "#redirectUrl#?action=create_order&page_id=#pageID#",
             type: 'GET',
             success: function(order) 
-            {  
-                console.log(order);
-                rzp_order = JSON.parse(order);
-                
-                rzp_order.handler = function(payment)
+            {   
+                order.handler = function(payment)
                 {
                     $('#razorpay_payment_id').val(payment.razorpay_payment_id);
                     $('#razorpay_signature').val(payment.razorpay_signature);
@@ -126,15 +123,15 @@ jQuery(document).ready(function( $ ){
                 };
 
                 // After order is created, open checkout
-                openCheckout(rzp_order);
+                openCheckout(order);
             }
         })
     }
 
     // global method
-    function openCheckout(rzp_order) 
+    function openCheckout(order) 
     {
-        var razorpayCheckout = new Razorpay(rzp_order);
+        var razorpayCheckout = new Razorpay(order);
         razorpayCheckout.open();
     }
 

@@ -75,8 +75,8 @@ function wordpressRazorpayInit()
         {
             $pluginLinks = array(
                             'settings' => '<a href="'. esc_url(admin_url('admin.php?page=razorpay')) .'">Settings</a>',
-                            'docs' => '<a href="https://github.com/razorpay/razorpay-quick-payments">Docs</a>',
-                            'support' => '<a href="https://razorpay.com/contact/">Support</a>'
+                            'docs'     => '<a href="https://github.com/razorpay/razorpay-quick-payments">Docs</a>',
+                            'support'  => '<a href="https://razorpay.com/contact/">Support</a>'
                         );
 
             $links = array_merge($links, $pluginLinks);
@@ -146,21 +146,30 @@ function wordpressRazorpayInit()
                 // Calls the helper function to create order data
                 $data = $this->getOrderCreationData($orderID, $amount);
 
-                $razorpayOrder = $api->order->create($data);
+                try
+                {
+                    $razorpayOrder = $api->order->create($data);
+                }
+                catch (Exception $e)
+                {
+                    echo 'Wordpress Error : ' . $e->getMessage();
+                }
 
                 // Stores the data as a cached variable temporarily
                 $_SESSION['razorpay_order_id'] = $razorpayOrder['id'];
 
                 $razorpayArgs = array(
-                  'key' => $this->keyID,
-                  'name' => $name,
-                  'amount' => $amount,
-                  'currency' => 'INR',
-                  'description' => $productInfo,
-                  'order_id' => $razorpayOrder['id']
+                    'key'         => $this->keyID,
+                    'name'        => $name,
+                    'amount'      => $amount,
+                    'currency'    => 'INR',
+                    'description' => $productInfo,
+                    'order_id'    => $razorpayOrder['id']
                 );
 
                 $json = json_encode($razorpayArgs);
+
+                header('Content-Type: application/json');
 
                 echo $json;
             }
@@ -206,9 +215,9 @@ function wordpressRazorpayInit()
         function getOrderCreationData($orderID, $amount)
         {
             $data = array(
-                'receipt' => $orderID,
-                'amount' => $amount,
-                'currency' => 'INR',
+                'receipt'         => $orderID,
+                'amount'          => $amount,
+                'currency'        => 'INR',
                 'payment_capture' => ($this->paymentAction === 'authorize') ? 0 : 1
             );
 
@@ -230,19 +239,9 @@ function wordpressRazorpayInit()
 
                 $amount = $_SESSION['amount'] / 100; // paise to rupees
 
-                $success = false;
+                $api = new Api($this->keyID, $this->keySecret);
 
-                try
-                {
-                    $api = new Api($this->keyID, $this->keySecret);
-
-                    $success = $api->utility->verifyPaymentSignature($attributes);
-                }
-                catch (Exception $e)
-                {
-                    $success = false;
-                    $error = 'WORDPRESS_ERROR: ' . $e->getMessage();
-                }
+                $success = $api->utility->verifyPaymentSignature($attributes);
 
                 if ($success === true)
                 {

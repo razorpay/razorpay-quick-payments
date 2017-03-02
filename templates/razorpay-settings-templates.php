@@ -28,24 +28,25 @@ class RZP_Templates
     {
     	add_settings_section('razorpay_fields', 'Edit Settings', array($this, 'displayHeader'), 'razorpay_sections');
 
-    	// Enabled/Disabled Field
-    	add_settings_field('enabled_field', 'Enabled/Disabled', array($this, 'displayEnable'), 'razorpay_sections', 'razorpay_fields');
-    	register_setting('razorpay_fields', 'enabled_field');
+        $settings = $this->getSettings();
 
-    	add_settings_field('title_field', 'Title', array($this, 'displayTitle'), 'razorpay_sections', 'razorpay_fields');
-    	register_setting('razorpay_fields', 'title_field');
+        foreach ($settings as $settingField => $settingName)
+        {
+            $displayMethod = $this->getDisplaySettingMethod($settingField);
 
-    	add_settings_field('description_field', 'Description', array($this, 'displayDescription'), 'razorpay_sections', 'razorpay_fields');
-    	register_setting('razorpay_fields', 'description_field');
+            add_settings_field(
+                $settingField,
+                $settingName,
+                array(
+                    $this,
+                    $displayMethod
+                ),
+                'razorpay_sections',
+                'razorpay_fields'
+            );
 
-    	add_settings_field('key_id_field', 'Key_id', array($this, 'displayKeyID'), 'razorpay_sections', 'razorpay_fields');
-    	register_setting('razorpay_fields', 'key_id_field');
-
-    	add_settings_field('key_secret_field', 'Key_secret', array($this, 'displayKeySecret'), 'razorpay_sections', 'razorpay_fields');
-    	register_setting('razorpay_fields', 'key_secret_field');
-
-    	add_settings_field('payment_action_field', 'Payment_action', array($this, 'displayPaymentAction'), 'razorpay_sections', 'razorpay_fields');
-    	register_setting('razorpay_fields', 'payment_action_field');
+            register_setting('razorpay_fields', $settingField);
+        }
     }
 
     /**
@@ -61,14 +62,14 @@ class RZP_Templates
     /**
      * Enable field of settings page
     **/
-    function displayEnable()
+    function displayEnabled()
     {
         $default = get_option('enabled_field');
 
-        $enable = <<<RZP
+        $enable = <<<EOT
 <input type="checkbox" name="enabled_field" id="enable" value="{$default}" checked/>
 <label for ="enable">Enable Razorpay Payment Module.</label>
-RZP;
+EOT;
 
         echo $enable;
     }
@@ -80,10 +81,10 @@ RZP;
     {
         $default = get_option('title_field', "Credit Card/Debit Card/NetBanking");
 
-        $title = <<<RZP
+        $title = <<<EOT
 <input type="text" name="title_field" id="title" size="35" value="{$default}" /><br>
 <label for ="title">This controls the title which the user sees during checkout.</label>
-RZP;
+EOT;
 
         echo $title;
     }
@@ -95,10 +96,10 @@ RZP;
     {
         $default = get_option('description_field', "Pay securely by Credit or Debit card or internet banking through Razorpay");
 
-        $description = <<<RZP
+        $description = <<<EOT
 <input type="text" name="description_field" id="description" size="35" value="{$default}" /><br>
 <label for ="description">This controls the display which the user sees during checkout.</label>
-RZP;
+EOT;
 
         echo $description;
     }
@@ -110,10 +111,10 @@ RZP;
     {
         $default = get_option('key_id_field');
 
-        $keyID = <<<RZP
+        $keyID = <<<EOT
 <input type="text" name="key_id_field" id="key_id" size="35" value="{$default}" /><br>
 <label for ="key_id">The key Id and key secret can be generated from "API Keys" section of Razorpay Dashboard. Use test or live for test or live mode.</label>
-RZP;
+EOT;
 
         echo $keyID;
     }
@@ -125,10 +126,10 @@ RZP;
     {
         $default = get_option('key_secret_field');
 
-        $keySecret = <<<RZP
+        $keySecret = <<<EOT
 <input type="text" name="key_secret_field" id="key_secret" size="35" value="{$default}" /><br>
 <label for ="key_id">The key Id and key secret can be generated from "API Keys" section of Razorpay Dashboard. Use test or live for test or live mode.</label>
-RZP;
+EOT;
 
         echo $keySecret;
     }
@@ -140,15 +141,40 @@ RZP;
     {
         $default = get_option('payment_action_field');
 
-        $paymentAction = <<<RZP
+        $paymentAction = <<<EOT
 <select name="payment_action_field" id="payment_action" value="{$default}" />
     <option value="capture" selected>Authorize and Capture</option>
     <option value="authorize">Authorize</option>
 </select>
 <br>
 <label for ="payment_action">Payment action when order is compelete.</label>
-RZP;
+EOT;
 
         echo $paymentAction;
+    }
+
+    protected function getSettings()
+    {
+        $settings = array(
+            'enabled_field'        => 'Enabled/Disabled',
+            'title_field'          => 'Title',
+            'description_field'    => 'Description',
+            'key_id_field'         => 'Key_id',
+            'key_secret_field'     => 'Key_secret',
+            'payment_action_field' => 'Payment_action'
+        );
+
+        return $settings;
+    }
+
+    protected function getDisplaySettingMethod($settingsField)
+    {
+        $settingsField = ucwords($settingsField, '_');
+
+        $fieldWords = explode('_', $settingsField);
+
+        array_pop($fieldWords);
+
+        return 'display' . implode('', $fieldWords);
     }
 }
