@@ -241,7 +241,16 @@ function wordpressRazorpayInit()
 
                 $api = new Api($this->keyID, $this->keySecret);
 
-                $success = $api->utility->verifyPaymentSignature($attributes);
+                $success = false;
+
+                try
+                {
+                    $success = $api->utility->verifyPaymentSignature($attributes);
+                }
+                catch(Exception $e)
+                {
+                    echo 'Wordpress Error: ' . $e->getMessage();
+                }
 
                 if ($success === true)
                 {
