@@ -241,15 +241,16 @@ function wordpressRazorpayInit()
 
                 $api = new Api($this->keyID, $this->keySecret);
 
-                $success = false;
+                $success = true;
 
                 try
                 {
-                    $success = $api->utility->verifyPaymentSignature($attributes);
+                    $api->utility->verifyPaymentSignature($attributes);
                 }
                 catch(Exception $e)
                 {
-                    echo 'Wordpress Error: ' . $e->getMessage();
+                    $success = false;
+                    $error = 'Wordpress Error: ' . $e->getMessage();
                 }
 
                 if ($success === true)
@@ -259,7 +260,7 @@ function wordpressRazorpayInit()
                 }
                 else
                 {
-                    $this->message = 'Thank you for shopping with us. However, the payment failed.';
+                    $this->message = 'Thank you for shopping with us. However, the payment failed.\n' . $error ;
                 }
 
                 echo ($this->message);
