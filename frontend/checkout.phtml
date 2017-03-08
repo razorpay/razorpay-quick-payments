@@ -81,13 +81,14 @@
 </form>
 
 <script>
-jQuery(document).ready(function( $ ){
+jQuery(document).ready(function($){
     function showModal(response) {
         $('#response').html(response);
         $('html, body').css('overflow', 'hidden');
         $('.modal-container').show().prop('offsetHeight');
         $('.modal-container').addClass('shown');
     }
+
     function hideModal() {
         $('html, body').css('overflow', '');
         $('.modal-container').removeClass('shown');
@@ -95,18 +96,16 @@ jQuery(document).ready(function( $ ){
             $('.modal-container').hide();
         }, 300)
     }
+
     $('.close').click(hideModal);
 
     // global method
-    function createOrder()
-    {
+    function createOrder(){
         $.ajax({
             url: "#redirectUrl#?action=create_order&page_id=#pageID#",
             type: 'GET',
-            success: function(order) 
-            {   
-                order.handler = function(payment)
-                {
+            success: function(order) {   
+                order.handler = function(payment){
                     $('#razorpay_payment_id').val(payment.razorpay_payment_id);
                     $('#razorpay_signature').val(payment.razorpay_signature);
 
@@ -122,6 +121,13 @@ jQuery(document).ready(function( $ ){
                     });
                 };
 
+                // On dismissing the popup, enable the button again
+                order.modal = {
+                    ondismiss: function(){
+                        document.getElementById("btn-razorpay").disabled = false;
+                    }
+                };
+
                 // After order is created, open checkout
                 openCheckout(order);
             }
@@ -129,15 +135,24 @@ jQuery(document).ready(function( $ ){
     }
 
     // global method
-    function openCheckout(order) 
-    {
+    function openCheckout(order) {
         var razorpayCheckout = new Razorpay(order);
         razorpayCheckout.open();
     }
 
-    document.getElementById("btn-razorpay").onclick = function()
-    {
-        createOrder();
+    function disableRzpButton(){
+        document.getElementById("btn-razorpay").disabled = true;
     }
+
+
+    function addEvent(element, evnt, funct){
+        if (element.attachEvent)
+            return element.attachEvent('on' + evnt, funct);
+        else
+            return element.addEventListener(evnt, funct, false);
+    }
+
+    addEvent(document.getElementById("btn-razorpay"), 'click', createOrder);
+    addEvent(document.getElementById("btn-razorpay"), 'click', disableRzpButton);
 })
 </script>
