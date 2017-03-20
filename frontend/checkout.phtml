@@ -106,21 +106,26 @@ jQuery(document).ready(function($){
             url: "#redirectUrl#?action=create_order&page_id=#pageID#",
             type: 'GET',
             success: function(order) {   
-                order.handler = function(payment){
-                    $('#razorpay_payment_id').val(payment.razorpay_payment_id);
-                    $('#razorpay_signature').val(payment.razorpay_signature);
+                if (order.hasOwnProperty('error')){
+                    showModal(order['error']);
+                }
+                else{
+                    order.handler = function(payment){
+                        $('#razorpay_payment_id').val(payment.razorpay_payment_id);
+                        $('#razorpay_signature').val(payment.razorpay_signature);
 
-                    var form_data = $('form').serializeArray();
-                    
-                    $.ajax({
-                        url: "#redirectUrl#", 
-                        data: form_data,
-                        type: 'POST',
-                        success: function(response){
-                            showModal(response);
-                        }
-                    });
-                };
+                        var form_data = $('form').serializeArray();
+                        
+                        $.ajax({
+                            url: "#redirectUrl#", 
+                            data: form_data,
+                            type: 'POST',
+                            success: function(response){
+                                showModal(response);
+                            }
+                        });
+                    };
+                }
 
                 // On dismissing the popup, enable the button again
                 order.modal = {
