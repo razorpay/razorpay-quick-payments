@@ -158,7 +158,9 @@ function wordpressRazorpayInit()
                     }
                     catch (Exception $e)
                     {
-                        echo 'Wordpress Error : ' . $e->getMessage();
+                        $error = 'Wordpress Error : ' . $e->getMessage();
+
+                        echo json_encode($error);
                     }
 
                     // Stores the data as a cached variable temporarily
