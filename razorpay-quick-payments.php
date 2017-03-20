@@ -272,24 +272,10 @@ function wordpressRazorpayInit()
 
         protected function getPostAttributes()
         {
-            $paymentId = strval($_POST['razorpay_payment_id']);
-
-            if (strlen($paymentId) > 18)
-            {
-                $paymentId = substr($paymentId, 0, 18);
-            }
-
-            $signature = strval($_POST['razorpay_signature']);
-
-            if (strlen($signature) > 64)
-            {
-                $signature = substr($signature, 0, 64);
-            }
-
             $attributes = array(
-                'razorpay_payment_id' => sanitize_text_field($paymentId),
+                'razorpay_payment_id' => sanitize_text_field($_POST['razorpay_payment_id']),
                 'razorpay_order_id'   => $_SESSION['razorpay_order_id'],
-                'razorpay_signature'  => sanitize_text_field($signature)
+                'razorpay_signature'  => sanitize_text_field($_POST['razorpay_signature'])
             );
 
             return $attributes;
