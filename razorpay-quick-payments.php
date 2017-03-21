@@ -158,22 +158,23 @@ function wordpressRazorpayInit()
                     }
                     catch (Exception $e)
                     {
-                        $error = 'Wordpress Error : ' . $e->getMessage();
-
-                        echo json_encode($error);
+                        $razorpayArgs['error'] = 'Wordpress Error : ' . $e->getMessage();
                     }
 
-                    // Stores the data as a cached variable temporarily
-                    $_SESSION['razorpay_order_id'] = $razorpayOrder['id'];
+                    if (isset($razorpayArgs['error']) === false)
+                    {
+                        // Stores the data as a cached variable temporarily
+                        $_SESSION['razorpay_order_id'] = $razorpayOrder['id'];
 
-                    $razorpayArgs = array(
-                        'key'         => $this->keyID,
-                        'name'        => $name,
-                        'amount'      => $amount,
-                        'currency'    => 'INR',
-                        'description' => $productInfo,
-                        'order_id'    => $razorpayOrder['id']
-                    );
+                        $razorpayArgs = array(
+                            'key'         => $this->keyID,
+                            'name'        => $name,
+                            'amount'      => $amount,
+                            'currency'    => 'INR',
+                            'description' => $productInfo,
+                            'order_id'    => $razorpayOrder['id']
+                        );
+                    }
                 }
 
                 $json = json_encode($razorpayArgs);
