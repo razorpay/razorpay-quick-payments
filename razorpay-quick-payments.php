@@ -135,37 +135,47 @@ function wordpressRazorpayInit()
 
                 $metadata = get_post_meta($pageID);
 
-                $amount = (int) ($metadata['amount'][0]) * 100;
-
-                $productInfo = $this->getProductDecription($metadata, $pageID);
-
-                $name = $this->getProductName($metadata);
-
-                $api = new Api($this->keyID, $this->keySecret);
-
-                // Calls the helper function to create order data
-                $data = $this->getOrderCreationData($orderID, $amount);
-
-                try
+                if (empty($metadata) === true)
                 {
-                    $razorpayOrder = $api->order->create($data);
+                    $razorpayArgs['error'] = 'Post with given page ID not found';
                 }
-                catch (Exception $e)
+                else
                 {
-                    echo 'Wordpress Error : ' . $e->getMessage();
+                    $amount = (int) ($metadata['amount'][0]) * 100;
+
+                    $productInfo = $this->getProductDecription($metadata, $pageID);
+
+                    $name = $this->getProductName($metadata);
+
+                    $api = new Api($this->keyID, $this->keySecret);
+
+                    // Calls the helper function to create order data
+                    $data = $this->getOrderCreationData($orderID, $amount);
+
+                    try
+                    {
+                        $razorpayOrder = $api->order->create($data);
+                    }
+                    catch (Exception $e)
+                    {
+                        $razorpayArgs['error'] = 'Wordpress Error : ' . $e->getMessage();
+                    }
+
+                    if (isset($razorpayArgs['error']) === false)
+                    {
+                        // Stores the data as a cached variable temporarily
+                        $_SESSION['razorpay_order_id'] = $razorpayOrder['id'];
+
+                        $razorpayArgs = array(
+                            'key'         => $this->keyID,
+                            'name'        => $name,
+                            'amount'      => $amount,
+                            'currency'    => 'INR',
+                            'description' => $productInfo,
+                            'order_id'    => $razorpayOrder['id']
+                        );
+                    }
                 }
-
-                // Stores the data as a cached variable temporarily
-                $_SESSION['razorpay_order_id'] = $razorpayOrder['id'];
-
-                $razorpayArgs = array(
-                    'key'         => $this->keyID,
-                    'name'        => $name,
-                    'amount'      => $amount,
-                    'currency'    => 'INR',
-                    'description' => $productInfo,
-                    'order_id'    => $razorpayOrder['id']
-                );
 
                 $json = json_encode($razorpayArgs);
 
@@ -231,11 +241,7 @@ function wordpressRazorpayInit()
         {
             if (empty($_POST['razorpay_payment_id']) === false)
             {
-                $attributes = array(
-                    'razorpay_payment_id' => $_POST['razorpay_payment_id'],
-                    'razorpay_order_id'   => $_SESSION['razorpay_order_id'],
-                    'razorpay_signature'  => $_POST['razorpay_signature']
-                );
+                $attributes = $this->getPostAttributes();
 
                 $amount = $_SESSION['amount'] / 100; // paise to rupees
 
@@ -256,7 +262,7 @@ function wordpressRazorpayInit()
                 if ($success === true)
                 {
                     $this->message = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."
-                    . "<br><br>" . "Transaction ID:" . $attributes['razorpay_payment_id'] . "<br><br>" . "Order Amount: ₹$amount";
+                    . "<br><br>" . "Transaction ID : " . esc_html($attributes['razorpay_payment_id']) . "<br><br>" . "Order Amount: ₹$amount";
                 }
                 else
                 {
@@ -265,6 +271,17 @@ function wordpressRazorpayInit()
 
                 echo ($this->message);
             }
+        }
+
+        protected function getPostAttributes()
+        {
+            $attributes = array(
+                'razorpay_payment_id' => sanitize_text_field($_POST['razorpay_payment_id']),
+                'razorpay_order_id'   => $_SESSION['razorpay_order_id'],
+                'razorpay_signature'  => sanitize_text_field($_POST['razorpay_signature'])
+            );
+
+            return $attributes;
         }
 
     }
