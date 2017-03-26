@@ -112,8 +112,6 @@ function wordpressRazorpayInit()
                 $keys = array("#liveurl#", "#redirectUrl#", "#pageID#");
                 $values = array($this->liveurl, RZP_REDIRECT_URL, $pageID);
 
-                $_SESSION['amount'] = $amount;
-
                 $html = str_replace($keys, $values, $buttonHtml);
 
                 return $html;
@@ -141,7 +139,9 @@ function wordpressRazorpayInit()
                 }
                 else
                 {
-                    $amount = (int) ($metadata['amount'][0]) * 100;
+                    $amount = (int) $_GET['amount'] * 100;
+
+                    $_SESSION['amount'] = $amount;
 
                     $productInfo = $this->getProductDecription($metadata, $pageID);
 

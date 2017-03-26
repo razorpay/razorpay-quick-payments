@@ -1,4 +1,5 @@
 <div>
+    <input type="text" id="amount" placeholder="Enter donation amount here.....">
     <button id="btn-razorpay">Pay with Razorpay</button>
 </div>
 <div class="modal-container">
@@ -102,8 +103,9 @@ jQuery(document).ready(function($){
 
     // global method
     function createOrder(){
+        amount = $('#amount').val();
         $.ajax({
-            url: "#redirectUrl#?action=create_order&page_id=#pageID#",
+            url: "#redirectUrl#?action=create_order&page_id=#pageID#&amount=" + amount.toString(),
             type: 'GET',
             success: function(order) {   
                 if (order.hasOwnProperty('error')){
