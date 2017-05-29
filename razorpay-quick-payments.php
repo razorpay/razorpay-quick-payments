@@ -112,7 +112,7 @@ function wordpressRazorpayInit()
                 $keys = array("#liveurl#", "#redirectUrl#", "#pageID#");
                 $values = array($this->liveurl, RZP_REDIRECT_URL, $pageID);
 
-                $_SESSION['amount'] = $amount;
+                $_SESSION['rzp_QP_amount'] = $amount;
 
                 $html = str_replace($keys, $values, $buttonHtml);
 
@@ -164,7 +164,7 @@ function wordpressRazorpayInit()
                     if (isset($razorpayArgs['error']) === false)
                     {
                         // Stores the data as a cached variable temporarily
-                        $_SESSION['razorpay_order_id'] = $razorpayOrder['id'];
+                        $_SESSION['rzp_QP_order_id'] = $razorpayOrder['id'];
 
                         $razorpayArgs = array(
                             'key'         => $this->keyID,
@@ -239,11 +239,11 @@ function wordpressRazorpayInit()
          **/
         function wpCheckRazorpayResponse()
         {
-            if (empty($_POST['razorpay_payment_id']) === false)
-            {
-                $attributes = $this->getPostAttributes();
+            $attributes = $this->getPostAttributes();
 
-                $amount = $_SESSION['amount'] / 100; // paise to rupees
+            if (!empty($attributes))
+            {
+                $amount = $_SESSION['rzp_QP_amount'] / 100; // paise to rupees
 
                 $api = new Api($this->keyID, $this->keySecret);
 
@@ -275,15 +275,17 @@ function wordpressRazorpayInit()
 
         protected function getPostAttributes()
         {
-            $attributes = array(
-                'razorpay_payment_id' => sanitize_text_field($_POST['razorpay_payment_id']),
-                'razorpay_order_id'   => $_SESSION['razorpay_order_id'],
-                'razorpay_signature'  => sanitize_text_field($_POST['razorpay_signature'])
-            );
+            if (isset($_POST['rzp_QP_form_submit']))
+            {
+                return array(
+                    'razorpay_payment_id' => sanitize_text_field($_POST['razorpay_payment_id']),
+                    'razorpay_order_id'   => $_SESSION['rzp_QP_order_id'],
+                    'razorpay_signature'  => sanitize_text_field($_POST['razorpay_signature'])
+                );
+            }
 
-            return $attributes;
+            return array();
         }
-
     }
 
     return new WP_Razorpay();
