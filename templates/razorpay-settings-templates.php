@@ -169,7 +169,7 @@ EOT;
 
     protected function getDisplaySettingMethod($settingsField)
     {
-        $settingsField = ucwords($settingsField, '_');
+        $settingsField = ucwords($settingsField);
 
         $fieldWords = explode('_', $settingsField);
 
