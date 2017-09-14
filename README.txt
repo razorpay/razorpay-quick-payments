@@ -2,8 +2,8 @@
 Contributors: razorpay
 Tags: razorpay, payments, india, quick, simple
 Requires at least: 3.0.1
-Tested up to: 4.6
-Stable tag: 
+Tested up to: 4.8.1
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,7 +29,7 @@ This makes use of the Razorpay Orders API, and the flow is the follows:
 
 == Customization ==
 
-For this plugin to work correctly, please mention the following items as page metadata using Screen Options -> Custom Fields:
+For this plugin to work correctly, please mention the following items as page metadata (using Screen Options for >4.8) -> Custom Fields:
 
 1. 'name' of the product.
 2. 'description' of the product.
