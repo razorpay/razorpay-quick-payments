@@ -14,17 +14,17 @@ class Utility
 
         $payload = $orderId . '|' . $paymentId;
 
-        return self::verifySignature($payload, $expectedSignature);
+        return self::verifySignature($payload, $expectedSignature, Api::getSecret());
     }
 
-    public function verifyWebhookSignature($payload, $expectedSignature)
+    public function verifyWebhookSignature($payload, $expectedSignature, $webhookapisecret)
     {
-        return self::verifySignature($payload, $expectedSignature);
+        return self::verifySignature($payload, $expectedSignature, $webhookapisecret);
     }
 
-    public function verifySignature($payload, $expectedSignature)
+    public function verifySignature($payload, $expectedSignature, $secret)
     {
-        $actualSignature = hash_hmac(self::SHA256, $payload, Api::getSecret());
+        $actualSignature = hash_hmac(self::SHA256, $payload, $secret);
 
         // Use lang's built-in hash_equals if exists to mitigate timing attacks
         if (function_exists('hash_equals'))
