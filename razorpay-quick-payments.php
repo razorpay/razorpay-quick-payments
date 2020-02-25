@@ -4,7 +4,7 @@
  * Plugin Name: Razorpay Quick Payments
  * Plugin URI: https://github.com/razorpay/razorpay-quick-payments
  * Description: Quick Payments for Wordpress, by Razorpay.
- * Version: 1.0.1
+ * Version: 1.1.0
  * Author: Team Razorpay
  * Author URI: https://razorpay.com/about/
  * License: GPL2
@@ -166,13 +166,25 @@ function wordpressRazorpayInit()
                         // Stores the data as a cached variable temporarily
                         $_SESSION['rzp_QP_order_id'] = $razorpayOrder['id'];
 
+                        $mod_version = get_plugin_data(plugin_dir_path(__FILE__) . 'razorpay-quick-payments.php')['Version'];
+
+                        $wp_version = get_bloginfo( 'version' );
+
                         $razorpayArgs = array(
                             'key'         => $this->keyID,
                             'name'        => $name,
                             'amount'      => $amount,
                             'currency'    => 'INR',
                             'description' => $productInfo,
-                            'order_id'    => $razorpayOrder['id']
+                            'order_id'    => $razorpayOrder['id'],
+                            'notes'       => [
+                                'quick_payment_order_id' => $orderID
+                            ],
+                            '_'           => [
+                                'integration'                   => 'Quick Payment',
+                                'integration_version'           => $mod_version,
+                                'integration_parent_version'    => $wp_version,
+                            ],
                         );
                     }
                 }

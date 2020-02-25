@@ -2,8 +2,8 @@
 Contributors: razorpay
 Tags: razorpay, payments, india, quick, simple
 Requires at least: 3.0.1
-Tested up to: 4.8.1
-Stable tag: 1.0.1
+Tested up to: 5.3.2
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,4 +33,11 @@ For this plugin to work correctly, please mention the following items as page me
 
 1. 'name' of the product.
 2. 'description' of the product.
-3. 'amount' in paise, with a minimum of 1 rupee.
+3. 'amount' with a minimum of 1 rupee.
+
+== Changelog ==
+
+= 1.1.0 =
+* Added metadata information.
+* Updates Razorpay SDK
+* Tested upto WordPress 5.3.2
