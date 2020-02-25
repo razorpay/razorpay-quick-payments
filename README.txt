@@ -33,7 +33,7 @@ For this plugin to work correctly, please mention the following items as page me
 
 1. 'name' of the product.
 2. 'description' of the product.
-3. 'amount' in paise, with a minimum of 1 rupee.
+3. 'amount' with a minimum of 1 rupee.
 
 == Changelog ==
 
