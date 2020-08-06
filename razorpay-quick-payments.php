@@ -21,6 +21,8 @@ add_action('plugins_loaded', 'wordpressRazorpayInit', 0); // not sure if this is
 
 function wordpressRazorpayInit()
 {
+    wp_enqueue_script('jquery');
+
     // Adding constants
     if (!defined('RZP_BASE_NAME'))
     {
@@ -165,6 +167,10 @@ function wordpressRazorpayInit()
                     {
                         // Stores the data as a cached variable temporarily
                         $_SESSION['rzp_QP_order_id'] = $razorpayOrder['id'];
+
+                        if( ! function_exists('get_plugin_data') ){
+                            require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+                        }
 
                         $mod_version = get_plugin_data(plugin_dir_path(__FILE__) . 'razorpay-quick-payments.php')['Version'];
 
