@@ -287,7 +287,7 @@ function wordpressRazorpayInit()
 
         protected function getPostAttributes()
         {
-            if (isset($_POST['rzp_QP_form_submit']))
+            if (isset($_REQUEST['rzp_QP_form_submit']))
             {
                 return array(
                     'razorpay_payment_id' => sanitize_text_field($_POST['razorpay_payment_id']),
