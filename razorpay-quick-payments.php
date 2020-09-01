@@ -104,7 +104,7 @@ function wordpressRazorpayInit()
 
             $metadata = get_post_meta($pageID);
 
-            $amount = ($metadata['amount'][0]) * 100;
+            $amount = (int) (number_format($metadata['amount'][0] * 100, 0, ".", ""));
 
             if (isset($this->keyID) && isset($this->keySecret) && $amount!=null)
             {
@@ -143,7 +143,7 @@ function wordpressRazorpayInit()
                 }
                 else
                 {
-                    $amount = ($metadata['amount'][0]) * 100;
+                    $amount = (int) (number_format($metadata['amount'][0] * 100, 0, ".", ""));
 
                     $productInfo = $this->getProductDecription($metadata, $pageID);
 
