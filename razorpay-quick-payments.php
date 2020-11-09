@@ -21,8 +21,6 @@ add_action('plugins_loaded', 'wordpressRazorpayInit', 0); // not sure if this is
 
 function wordpressRazorpayInit()
 {
-    wp_enqueue_script('jquery');
-
     // Adding constants
     if (!defined('RZP_BASE_NAME'))
     {
@@ -165,6 +163,8 @@ function wordpressRazorpayInit()
 
                     if (isset($razorpayArgs['error']) === false)
                     {
+                        wp_enqueue_script('jquery');
+
                         // Stores the data as a cached variable temporarily
                         $_SESSION['rzp_QP_order_id'] = $razorpayOrder['id'];
 
