@@ -3,7 +3,7 @@ Contributors: razorpay
 Tags: razorpay, payments, india, quick, simple
 Requires at least: 3.0.1
 Tested up to: 5.5
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,6 +36,9 @@ For this plugin to work correctly, please mention the following items as page me
 3. 'amount' with a minimum of 1 rupee.
 
 == Changelog ==
+
+= 1.2.2 =
+* Bug fix
 
 = 1.2.1 =
 * Bug fix
