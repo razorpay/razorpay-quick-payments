@@ -167,6 +167,7 @@ function wordpressRazorpayInit()
 
                     if (isset($razorpayArgs['error']) === false)
                     {
+                        wp_enqueue_script('jquery');
                         
                         // Stores the data as a cached variable temporarily
                         $_SESSION['rzp_QP_order_id'] = $razorpayOrder['id'];
