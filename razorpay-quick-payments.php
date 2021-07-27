@@ -4,7 +4,7 @@
  * Plugin Name: Razorpay Quick Payments
  * Plugin URI: https://github.com/razorpay/razorpay-quick-payments
  * Description: Quick Payments for Wordpress, by Razorpay.
- * Version: 1.2.3
+ * Version: 1.2.1
  * Author: Team Razorpay
  * Author URI: https://razorpay.com/about/
  * License: GPL2
@@ -15,10 +15,14 @@ use Razorpay\Api\Api;
 
 require_once __DIR__.'/includes/razorpay-settings.php';
 session_start();
+
+
 add_action('plugins_loaded', 'wordpressRazorpayInit', 0); // not sure if this is the right hook
 
 function wordpressRazorpayInit()
 {
+    wp_enqueue_script('jquery');
+
     // Adding constants
     if (!defined('RZP_BASE_NAME'))
     {
@@ -163,8 +167,7 @@ function wordpressRazorpayInit()
 
                     if (isset($razorpayArgs['error']) === false)
                     {
-                        wp_enqueue_script('jquery');
-
+                    
                         // Stores the data as a cached variable temporarily
                         $_SESSION['rzp_QP_order_id'] = $razorpayOrder['id'];
                         
@@ -256,8 +259,7 @@ function wordpressRazorpayInit()
          * This method is used to verify the signature given by Razorpay's Order's API
          **/
         function wpCheckRazorpayResponse()
-        {   
-            session_write_close();
+        {  
             $attributes = $this->getPostAttributes();
            
             if (!empty($attributes))
@@ -291,6 +293,7 @@ function wordpressRazorpayInit()
 
                 echo ($this->message);
             }
+            session_write_close();
         }
 
         protected function getPostAttributes()
