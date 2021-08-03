@@ -170,6 +170,7 @@ function wordpressRazorpayInit()
                     
                         // Stores the data as a cached variable temporarily
                         $_SESSION['rzp_QP_order_id'] = $razorpayOrder['id'];
+                        $_SESSION['rzp_QP_amount'] = $amount;
                         
                         if( ! function_exists('get_plugin_data') ){
                             require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
