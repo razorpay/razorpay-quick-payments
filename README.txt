@@ -38,7 +38,7 @@ For this plugin to work correctly, please mention the following items as page me
 == Changelog ==
 
 = 1.2.3 =
-* Bug fix.
+* Bug fix response data.
 * Tested upto WordPress 5.8
 
 = 1.2.2 =

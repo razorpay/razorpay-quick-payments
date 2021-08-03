@@ -114,8 +114,6 @@ function wordpressRazorpayInit()
                 $keys = array("#liveurl#", "#redirectUrl#", "#pageID#");
                 $values = array($this->liveurl, RZP_REDIRECT_URL, $pageID);
 
-                $_SESSION['rzp_QP_amount'] = $amount;
-
                 $html = str_replace($keys, $values, $buttonHtml);
 
                 return $html;
@@ -170,7 +168,7 @@ function wordpressRazorpayInit()
                     
                         // Stores the data as a cached variable temporarily
                         $_SESSION['rzp_QP_order_id'] = $razorpayOrder['id'];
-                        
+                        $_SESSION['rzp_QP_amount'] = $amount;
                         if( ! function_exists('get_plugin_data') ){
                             require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
                         }
