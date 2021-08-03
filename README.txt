@@ -3,7 +3,7 @@ Contributors: razorpay
 Tags: razorpay, payments, india, quick, simple
 Requires at least: 3.0.1
 Tested up to: 5.8
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -37,9 +37,8 @@ For this plugin to work correctly, please mention the following items as page me
 
 == Changelog ==
 
-= 1.2.3 =
+= 1.2.4 =
 * Bug fix response data.
-* Tested upto WordPress 5.8
 
 = 1.2.2 =
 * Bug fix
