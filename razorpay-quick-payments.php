@@ -113,9 +113,7 @@ function wordpressRazorpayInit()
                 // Replacing placeholders in the HTML with PHP variables for the form to be handled correctly
                 $keys = array("#liveurl#", "#redirectUrl#", "#pageID#");
                 $values = array($this->liveurl, RZP_REDIRECT_URL, $pageID);
-
-               // $_SESSION['rzp_QP_amount'] = $amount;
-
+                
                 $html = str_replace($keys, $values, $buttonHtml);
 
                 return $html;
