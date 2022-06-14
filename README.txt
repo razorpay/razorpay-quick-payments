@@ -37,7 +37,7 @@ For this plugin to work correctly, please mention the following items as page me
 
 == Changelog ==
 = 1.2.5 =
-* Bug fix for  payment pop up.
+* Bug fix for payment pop up in Wordpress 6.0.
 
 = 1.2.4 =
 * Bug fix response data.
