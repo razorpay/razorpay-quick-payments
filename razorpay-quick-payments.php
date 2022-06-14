@@ -18,6 +18,12 @@ session_start();
 
 
 add_action('plugins_loaded', 'wordpressRazorpayInit', 0); // not sure if this is the right hook
+add_action('admin_post_create_order','dummy');// adding dummy action to create order so that it passes the has_action check
+add_action('admin_post_nopriv__create_order','dummy');
+function dummy()
+{
+    return 1;
+}
 
 function wordpressRazorpayInit()
 {
