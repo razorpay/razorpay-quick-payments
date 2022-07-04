@@ -27,9 +27,9 @@ function dummy()
 
 function wordpressRazorpayInit()
 {
-    add_action( 'admin_enqueue_scripts', 'my_scripts' );//admin-page
-    add_action( 'wp_enqueue_scripts', 'my_scripts' );//front-end
-    add_action( 'login_enqueue_scripts', 'my_scripts' );//login page
+    add_action('admin_enqueue_scripts', 'enqueue_scripts' );//admin-page
+    add_action('wp_enqueue_scripts', 'enqueue_scripts' );//front-end
+    add_action('login_enqueue_scripts', 'enqueue_scripts' );//login page
 
     // Adding constants
     if (!defined('RZP_BASE_NAME'))
@@ -319,6 +319,6 @@ function wordpressRazorpayInit()
 
     return new WP_Razorpay();
 }
-function my_scripts() {
+function enqueue_scripts() {
     wp_enqueue_script('jquery');
 }
