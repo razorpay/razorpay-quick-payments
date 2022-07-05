@@ -36,6 +36,9 @@ For this plugin to work correctly, please mention the following items as page me
 3. 'amount' with a minimum of 1 rupee.
 
 == Changelog ==
+= 1.2.6 =
+* Bug fix for script.
+
 = 1.2.5 =
 * Bug fix for payment pop up in Wordpress 6.0.
 
