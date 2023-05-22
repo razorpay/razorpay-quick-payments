@@ -38,7 +38,7 @@ For this plugin to work correctly, please mention the following items as page me
 == Changelog ==
 
 = 1.2.8 =
-* Updates Razorpay SDK
+* Updated Razorpay SDK
 
 = 1.2.7 =
 * Tested up to WordPress 6.1.1
