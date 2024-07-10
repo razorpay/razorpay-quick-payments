@@ -182,7 +182,7 @@ EOT;
             }                        
             else
             {
-                if (empty($default) === true && $value === 'INR')
+                if (empty($default) === true and $value === 'INR')
                 {
                     $currency .= '<option value="' . $value . '" selected="selected">' . $value . '</option>'; 
                 }
@@ -201,12 +201,12 @@ EOT;
     protected function getSettings()
     {
         $settings = array(
-            'enabled_field'        => 'Enabled/Disabled',
-            'title_field'          => 'Title',
-            'description_field'    => 'Description',
-            'key_id_field'         => 'Key_id',
-            'key_secret_field'     => 'Key_secret',
-            'payment_action_field' => 'Payment_action',
+            'enabled_field'         => 'Enabled/Disabled',
+            'title_field'           => 'Title',
+            'description_field'     => 'Description',
+            'key_id_field'          => 'Key_id',
+            'key_secret_field'      => 'Key_secret',
+            'payment_action_field'  => 'Payment_action',
             'currency_action_field' => 'Currency'
         );
 
