@@ -305,7 +305,7 @@ function wordpressRazorpayInit()
 
         function getCurrencyObject()
         {
-            $supported_currencies = json_decode(file_get_contents(__DIR__."/supported-currencies.json"), true)['supported-currencies'];
+            $supported_currencies = json_decode(file_get_contents(__DIR__ . "/supported-currencies.json"), true)['supported-currencies'];
 
             $currency_code = get_option('currency_action_field');
 
