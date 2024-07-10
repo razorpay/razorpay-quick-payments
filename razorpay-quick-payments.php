@@ -113,7 +113,7 @@ function wordpressRazorpayInit()
 
             $metadata = get_post_meta($pageID);
 
-            $amount = (int) (number_format($metadata['amount'][0] * pow(10, (int)$this->getCurrencyObject()['Exponent']), 0, ".", ""));
+            $amount = (int) (number_format($metadata['amount'][0] * pow(10, (int)$this->getCurrencyObject()['exponent']), 0, ".", ""));
 
             if (isset($this->keyID) && isset($this->keySecret) && $amount!=null)
             {
@@ -150,7 +150,7 @@ function wordpressRazorpayInit()
                 }
                 else
                 {
-                    $amount = (int) (number_format($metadata['amount'][0] * pow(10, (int)$this->getCurrencyObject()['Exponent']), 0, ".", ""));
+                    $amount = (int) (number_format($metadata['amount'][0] * pow(10, (int)$this->getCurrencyObject()['exponent']), 0, ".", ""));
 
                     $productInfo = $this->getProductDecription($metadata, $pageID);
 
@@ -271,7 +271,7 @@ function wordpressRazorpayInit()
 
             if (!empty($attributes))
             {
-                $amount = $_SESSION['rzp_QP_amount'] / pow(10, (int)$this->getCurrencyObject()['Exponent']); // paise to rupees
+                $amount = $_SESSION['rzp_QP_amount'] / pow(10, (int)$this->getCurrencyObject()['exponent']); // paise to rupees
 
                 $api = new Api($this->keyID, $this->keySecret);
 
@@ -313,7 +313,7 @@ function wordpressRazorpayInit()
 
             foreach($supported_currencies as $supported_currency)
             {
-                if ($supported_currency['ISO Code'] === $currency_code)
+                if ($supported_currency['iso_code'] === $currency_code)
                 {
                     $currency_object = $supported_currency;
                     break;

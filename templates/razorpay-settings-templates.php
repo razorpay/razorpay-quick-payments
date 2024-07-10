@@ -156,38 +156,44 @@ EOT;
         echo $paymentAction;
     }
 
-        /**
+    /**
      * Currency field of settings page
     **/
     function displayCurrencyAction()
     {
         $default = get_option('currency_action_field');
 
-        $supported_currencies = json_decode(file_get_contents(__DIR__."/../supported-currencies.json"), true)['supported-currencies'];
+        $supported_currencies = json_decode(file_get_contents(__DIR__ . "/../supported-currencies.json"), true)['supported-currencies'];
 
         $supported_currency_codes = [];
 
-        foreach ( $supported_currencies as $k => $v )
+        foreach ($supported_currencies as $k => $v)
         {
-            array_push($supported_currency_codes, $v['ISO Code']);
+            array_push($supported_currency_codes, $v['iso_code']);
         }
 
-        $currency= '<select name="currency_action_field" id="currency_action"> ';
+        $currency = '<select name="currency_action_field" id="currency_action"> ';
                     
         foreach ($supported_currency_codes as $index => $value)
         { 
             if ($value === $default)
             {
-                $currency .='<option value="' . $value . '" selected="selected"'; 
+                $currency .= '<option value="' . $value . '" selected="selected">' . $value . '</option>'; 
             }                        
             else
             {
-                $currency .='<option value="' . $value . '"'; 
+                if (empty($default) === true && $value === 'INR')
+                {
+                    $currency .= '<option value="' . $value . '" selected="selected">' . $value . '</option>'; 
+                }
+                else
+                {
+                    $currency .= '<option value="' . $value . '">' . $value . '</option>'; 
+                }
             }
-            $currency .= '>' . $value . '</option>';
         }
-        $currency .='</select>'; 
-        $currency .='<br><label>Please choose a currency from the drop-down list.</label>';       
+        $currency .= '</select>'; 
+        $currency .= '<br><label>Please choose a currency from the drop-down list.</label>';       
 
         echo $currency;
     }
