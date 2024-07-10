@@ -93,4 +93,12 @@ class RZP_Settings
     {
         $this->template->displayPaymentAction();
     }
+
+    /**
+     * Currency field of settings page
+    **/
+    function displayCurrencyAction()
+    {
+        $this->template->displayCurrencyAction();
+    }
 }
