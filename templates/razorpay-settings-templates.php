@@ -156,15 +156,58 @@ EOT;
         echo $paymentAction;
     }
 
+    /**
+     * Currency field of settings page
+    **/
+    function displayCurrencyAction()
+    {
+        $default = get_option('currency_action_field');
+
+        $supported_currencies = json_decode(file_get_contents(__DIR__ . "/../supported-currencies.json"), true)['supported-currencies'];
+
+        $supported_currency_codes = [];
+
+        foreach ($supported_currencies as $k => $v)
+        {
+            array_push($supported_currency_codes, $v['iso_code']);
+        }
+
+        $currency = '<select name="currency_action_field" id="currency_action"> ';
+                    
+        foreach ($supported_currency_codes as $index => $value)
+        { 
+            if ($value === $default)
+            {
+                $currency .= '<option value="' . $value . '" selected="selected">' . $value . '</option>'; 
+            }                        
+            else
+            {
+                if (empty($default) === true and $value === 'INR')
+                {
+                    $currency .= '<option value="' . $value . '" selected="selected">' . $value . '</option>'; 
+                }
+                else
+                {
+                    $currency .= '<option value="' . $value . '">' . $value . '</option>'; 
+                }
+            }
+        }
+        $currency .= '</select>'; 
+        $currency .= '<br><label>Please choose a currency from the drop-down list.</label>';       
+
+        echo $currency;
+    }
+
     protected function getSettings()
     {
         $settings = array(
-            'enabled_field'        => 'Enabled/Disabled',
-            'title_field'          => 'Title',
-            'description_field'    => 'Description',
-            'key_id_field'         => 'Key_id',
-            'key_secret_field'     => 'Key_secret',
-            'payment_action_field' => 'Payment_action'
+            'enabled_field'         => 'Enabled/Disabled',
+            'title_field'           => 'Title',
+            'description_field'     => 'Description',
+            'key_id_field'          => 'Key_id',
+            'key_secret_field'      => 'Key_secret',
+            'payment_action_field'  => 'Payment_action',
+            'currency_action_field' => 'Currency'
         );
 
         return $settings;

@@ -59,6 +59,7 @@ function wordpressRazorpayInit()
             $this->keyID = get_option('key_id_field');
             $this->keySecret = get_option('key_secret_field');
             $this->paymentAction = get_option('payment_action_field');
+            $this->currencyAction = get_option('currency_action_field');
 
             // The checkout function is released when the pay now button is clicked
             $this->liveurl = 'https://checkout.razorpay.com/v1/checkout.js';
@@ -112,7 +113,7 @@ function wordpressRazorpayInit()
 
             $metadata = get_post_meta($pageID);
 
-            $amount = (int) (number_format($metadata['amount'][0] * 100, 0, ".", ""));
+            $amount = (int) (number_format($metadata['amount'][0] * pow(10, (int)$this->getCurrencyObject()['exponent']), 0, ".", ""));
 
             if (isset($this->keyID) && isset($this->keySecret) && $amount!=null)
             {
@@ -149,7 +150,7 @@ function wordpressRazorpayInit()
                 }
                 else
                 {
-                    $amount = (int) (number_format($metadata['amount'][0] * 100, 0, ".", ""));
+                    $amount = (int) (number_format($metadata['amount'][0] * pow(10, (int)$this->getCurrencyObject()['exponent']), 0, ".", ""));
 
                     $productInfo = $this->getProductDecription($metadata, $pageID);
 
@@ -189,7 +190,7 @@ function wordpressRazorpayInit()
                             'key'         => $this->keyID,
                             'name'        => $name,
                             'amount'      => $amount,
-                            'currency'    => 'INR',
+                            'currency'    => $this->currencyAction,
                             'description' => $productInfo,
                             'order_id'    => $razorpayOrder['id'],
                             'notes'       => [
@@ -254,7 +255,7 @@ function wordpressRazorpayInit()
             $data = array(
                 'receipt'         => $orderID,
                 'amount'          => $amount,
-                'currency'        => 'INR',
+                'currency'        => $this->currencyAction,
                 'payment_capture' => ($this->paymentAction === 'authorize') ? 0 : 1
             );
 
@@ -270,7 +271,7 @@ function wordpressRazorpayInit()
 
             if (!empty($attributes))
             {
-                $amount = $_SESSION['rzp_QP_amount'] / 100; // paise to rupees
+                $amount = $_SESSION['rzp_QP_amount'] / pow(10, (int)$this->getCurrencyObject()['exponent']); // paise to rupees
 
                 $api = new Api($this->keyID, $this->keySecret);
 
@@ -290,7 +291,7 @@ function wordpressRazorpayInit()
                 if ($success === true)
                 {
                     $this->message = "Thank you for shopping with us. Your account has been charged and your transaction is successful. We will be processing your order soon."
-                    . "<br><br>" . "Transaction ID : " . esc_html($attributes['razorpay_payment_id']) . "<br><br>" . "Order Amount: ₹$amount";
+                    . "<br><br>" . "Transaction ID : " . esc_html($attributes['razorpay_payment_id']) . "<br><br>" . "Order Amount: " . get_option('currency_action_field') . " " . $amount;
                 }
                 else
                 {
@@ -300,6 +301,26 @@ function wordpressRazorpayInit()
                 echo ($this->message);
             }
             session_write_close();
+        }
+
+        function getCurrencyObject()
+        {
+            $supported_currencies = json_decode(file_get_contents(__DIR__ . "/supported-currencies.json"), true)['supported-currencies'];
+
+            $currency_code = get_option('currency_action_field');
+
+            $currency_object = null;
+
+            foreach($supported_currencies as $supported_currency)
+            {
+                if ($supported_currency['iso_code'] === $currency_code)
+                {
+                    $currency_object = $supported_currency;
+                    break;
+                }
+            }
+            
+            return $currency_object;
         }
 
         protected function getPostAttributes()
