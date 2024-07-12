@@ -54,7 +54,10 @@ class RZP_Templates
     **/
     function displayHeader()
     {
-        $header = '<p>Razorpay is an online payment gateway for India with transparent pricing, seamless integration and great support</p>';
+        $header = '<p>Razorpay is an online payment gateway for India with transparent pricing, seamless integration and great support</p>
+                   <p>First <a href="https://easy.razorpay.com/onboarding?recommended_product=payment_gateway&source=quick_payments" target="_blank">
+                   signup</a> for a Razorpay account or <a href="https://dashboard.razorpay.com/signin?screen=sign_in&source=quick_payments"
+                   target="_blank">login</a> if you have an existing account.</p>';
 
         echo $header;
     }
