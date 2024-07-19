@@ -275,6 +275,13 @@ function wordpressRazorpayInit()
 
                 $api = new Api($this->keyID, $this->keySecret);
 
+                //IF session loss happens, rzp_QP_order_id will be NULL and rzp_QP_amount will be 0
+                if ($attributes['razorpay_order_id'] === null && (empty($attributes['razorpay_payment_id']) === false))
+                {
+                    $response = $api->payment->fetch($attributes['razorpay_payment_id']);
+                    $attributes['razorpay_order_id'] = $response['order_id'];
+                    $amount = $response['amount'] / pow(10, (int)$this->getCurrencyObject()['exponent']);
+                }
 
                 $success = true;
 
@@ -319,7 +326,7 @@ function wordpressRazorpayInit()
                     break;
                 }
             }
-            
+
             return $currency_object;
         }
 
