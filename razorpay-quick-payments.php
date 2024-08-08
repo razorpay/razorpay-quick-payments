@@ -299,6 +299,7 @@ function wordpressRazorpayInit()
                     $this->message = 'Thank you for shopping with us. However, the payment failed.\n' . $error ;
                 }
 
+                // Appending script tags to handle if output is not returned to ajax response
                 $this->message = "<script>var displayRzpModal = '" . $this->message . "';</script>";
 
                 echo ($this->message);
