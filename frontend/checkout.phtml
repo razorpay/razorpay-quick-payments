@@ -90,6 +90,10 @@ jQuery(document).ready(function($){
         $('.modal-container').addClass('shown');
     }
 
+    if (typeof displayRzpModal !== 'undefined') {
+        showModal(displayRzpModal);
+    }
+
     function hideModal() {
         $('html, body').css('overflow', '');
         $('.modal-container').removeClass('shown');
@@ -122,7 +126,9 @@ jQuery(document).ready(function($){
                             data: form_data,
                             type: 'POST',
                             success: function(response){
-                                showModal(response);
+                                modalScript = response.replace(/<\/?script.*?>/gi, '');
+                                eval(modalScript);
+                                showModal(displayRzpModal);
                             }
                         });
                     };
@@ -135,7 +141,7 @@ jQuery(document).ready(function($){
                     }
                 };
 
-                order.callback_url = "#redirectUrl#?rzp_QP_form_submit=1";
+                order.callback_url = location.protocol + '//' + location.host + location.pathname + "?rzp_QP_form_submit=1";
                 // After order is created, open checkout
                 openCheckout(order);
             }

@@ -27,6 +27,7 @@ function dummy()
 
 function wordpressRazorpayInit()
 {
+    header('Set-Cookie: ' . session_name() . '=' . session_id() . '; HttpOnly; SameSite=None; Secure; HttpOnly;');
     add_action('admin_enqueue_scripts', 'enqueueScripts' );//admin-page
     add_action('wp_enqueue_scripts', 'enqueueScripts' );//front-end
     add_action('login_enqueue_scripts', 'enqueueScripts' );//login page
@@ -298,6 +299,8 @@ function wordpressRazorpayInit()
                     $this->message = 'Thank you for shopping with us. However, the payment failed.\n' . $error ;
                 }
 
+                $this->message = "<script>var displayRzpModal = '" . $this->message . "';</script>";
+
                 echo ($this->message);
             }
             session_write_close();
@@ -325,7 +328,7 @@ function wordpressRazorpayInit()
 
         protected function getPostAttributes()
         {
-            if (isset($_REQUEST['rzp_QP_form_submit']))
+            if (isset($_REQUEST['rzp_QP_form_submit']) and isset($_REQUEST['razorpay_payment_id']))
             {
                 return array(
                     'razorpay_payment_id' => sanitize_text_field($_POST['razorpay_payment_id']),
