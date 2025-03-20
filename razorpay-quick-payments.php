@@ -138,7 +138,7 @@ function wordpressRazorpayInit()
             if (empty($_GET['page_id']) === false)
             {
                 // Random order ID
-                $orderID = mt_rand(0, mt_getrandmax());
+                $orderID = (string)mt_rand(0, mt_getrandmax());
 
                 // Create a custom field and call it 'amount', and assign the value in paise
                 $pageID = $_GET['page_id'];
