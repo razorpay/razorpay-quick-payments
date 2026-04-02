@@ -123,15 +123,3 @@ amount: 50000
 **Payment not working?**
 - Check Razorpay API keys
 - Verify browser console for errors
-
----
-
-## License
-
-This plugin is intended for internal or commercial use based on your organization’s policy.
-
----
-
-## Support
-
-For issues or feature requests, please raise a ticket or contact the development team.
