@@ -137,12 +137,19 @@ function wordpressRazorpayInit()
         {
             if (empty($_GET['page_id']) === false)
             {
+                $pageID = absint(wp_unslash($_GET['page_id']));
+
+                if ($pageID <= 0)
+                {
+                    header('Content-Type: application/json');
+                    echo wp_json_encode(array('error' => 'Invalid page ID'));
+                    return;
+                }
+
                 // Random order ID
                 $orderID = (string)mt_rand(0, mt_getrandmax());
 
                 // Create a custom field and call it 'amount', and assign the value in paise
-                $pageID = $_GET['page_id'];
-
                 $metadata = get_post_meta($pageID);
 
                 if (empty($metadata) === true)
