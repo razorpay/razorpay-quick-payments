@@ -47,6 +47,19 @@ function wordpressRazorpayInit()
     // The main plug in class
     class WP_Razorpay
     {
+        public $id;
+        public $method;
+        public $icon;
+        public $has_fields;
+        public $title;
+        public $description;
+        public $keyID;
+        public $keySecret;
+        public $paymentAction;
+        public $currencyAction;
+        public $liveurl;
+        public $message;
+
         public function __construct()
         {
             $this->id = 'razorpay';
