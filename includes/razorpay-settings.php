@@ -3,7 +3,9 @@
 require_once __DIR__.'/../templates/razorpay-settings-templates.php';
 
 class RZP_Settings
-{ 
+{
+    public $template;
+
     public function __construct()
     {
         // Creates a new menu page for razorpay's settings
