@@ -1,0 +1,37 @@
+service: razorpay-quick-payments  # required, canonical slug — immutable once registered
+displayName: "Quick Payments WooCommerce Plugin"  # required, human-readable name — README's H1 is "Quick Payments WooCommerce Plugin"
+description: "WooCommerce / WordPress plugin that lets merchants drop a Razorpay payment button onto any page with an `[RZP]` shortcode, configured with Key ID and Key Secret from the Razorpay dashboard."  # required, one-sentence description — directly from the README's features, installation and configuration sections
+type: library  # required, one of: service | worker | cron | library | pipeline — a PHP plugin distributed as a `.zip` and uploaded into a merchant's WordPress admin; no Dockerfile, no Spinnaker pipeline, no Netra deployment. It runs on the merchant's host, not Razorpay's · retype after the serviceTypes enum widens: sdk
+tier: T1  # required, one of: T0 | T1 | T2 | T3 · merchant-facing plugin: a bug blocks checkout on the merchant's storefront. Not T0 because Razorpay's platform stays up; the merchant's WP site is what breaks
+lifecycle: live  # actively pushed (last_push 2026-09-07); installation and configuration docs are complete
+
+domain: razorpay1/plugins-checkout  # required, two-level domain/subgroup slug — l1 from miss_seed is razorpay1 (Partnerships POD, PG (Plugins, Checkout) group); area reuses the group slug for the plugins surface
+
+owner:
+  team:  # required, owning team slug — TO FILL: this repo has no CODEOWNERS file, .github/repo_owners.json carries no team slug, and the GitHub repository-teams API is not readable with the current token; ask the POD lead for the owning GitHub team
+  em:  # name | @slack | email — TO FILL: DevRev runnable owner not found in SuccessFactors
+  org_group:  # SuccessFactors group of the EM — TO FILL: the declared owner has no SuccessFactors record, so the org tree cannot be resolved; ask the POD lead
+  org_sub_group:  # SuccessFactors sub-group of the EM — TO FILL: the declared owner has no SuccessFactors record; ask the POD lead
+  org_pod:  # SuccessFactors pod of the EM — TO FILL: the declared owner has no SuccessFactors record; ask the POD lead
+  pm:  # product manager — TO FILL: ask the Partnerships POD lead
+  overrides: []  # optional, region-scoped owner overrides — TO FILL only if some region is owned by a different team; each entry is a "region" code plus the owning "team" slug
+
+links:
+  repo: "https://github.com/razorpay/razorpay-quick-payments"  # canonical GitHub repo URL
+  alerts_repo:  # this service's alert rules in razorpay/alert-rules — TO FILL: no matching ruleset found; add one in razorpay/alert-rules, then link the file here
+  slos:  # SLO definitions — TO FILL: no slo.yaml at this repo root and no sloth ruleset for it under razorpay/alert-rules/slo/prod (the two places SLOs are defined today); add one there and link it here
+  slack_channel:  # primary Slack channel — TO FILL: no channel harvested; ask the Partnerships POD lead which channel owns the WP plugin family
+  zenduty_policy:  # Zenduty policy/service name used for paging — TO FILL: the service-to-policy mapping is not in DevRev or alert-rules for this service; it lives in the external Zenduty policies sheet
+  escalation_l1:  # service EM — TO FILL: no owner could be resolved for this service
+  escalation_l2:  # EM's manager — TO FILL: the EM has no SuccessFactors record, so no manager chain is available
+  escalation_l3:  # manager's manager — TO FILL: the EM has no SuccessFactors record, so no manager chain is available
+  oncall_handle:  # Slack/PagerDuty oncall handle or usergroup — TO FILL: not set on the DevRev runnable
+  runbook:  # link to the incident runbook — TO FILL: no runbook directory for this service in razorpay/rzp-oncall-agent; add one or link the Google Doc / alpha.razorpay.com page
+  api_docs:  # API documentation — TO FILL: no swagger/openapi/proto found in the repo tree; link the API spec or Postman collection
+  dashboard:  # primary dashboard — TO FILL: not applicable to a plugin running on merchants' WordPress hosts
+  logs_and_traces: "https://razorpay-prod.app.coralogix.in/#/query-new/archive-logs"  # org-standard prod Coralogix — filter subsystem "razorpay-quick-payments"
+  strategy_okr:  # TO FILL: link the FY strategy doc for the owning group.
+  risk_assessment:  # TO FILL: no .agents/skills/risk-assessment in this repo; add the per-repo risk-assessment skill
+  regions:  # per-region links — TO FILL: no prod region deployment found for this service in spinacode or alert-rules; add a block per geography once it ships
+
+dependencies: []  # optional, declared service dependencies — TO FILL: shape: - service: <slug> for internal deps, - vendor: <name> for external (gateways, banks)
